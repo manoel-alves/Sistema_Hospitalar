@@ -5,7 +5,7 @@ from utils.menu_cruds import *
 
 def main():
     inicializa_database()
-    
+
     quant_opcoes = 4
     valido = True
     while True:

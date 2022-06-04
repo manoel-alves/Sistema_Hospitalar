@@ -10,12 +10,16 @@ TITULO_EXCLUSAO = 'EXCLUIR HOSPITAL'
 def insere_hospital():
     while True:
         nome = obter_nome()
-        
+        if not nome: break
+          
         cnpj = obter_cnpj()
+        if not cnpj: break
         
         endereco = obter_endereco()
+        if not endereco: break
         
         telefone = obter_telefone()
+        if not telefone: break
         
         hospital = Hospital(cnpj, nome, endereco, telefone)
         
@@ -42,24 +46,27 @@ def obter_nome():
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO)
+        titulo_obtencao()
         if not valido:
             mensagem_input_invalido('Nome Invalido!')
             valido = True
         nome = input('Insira o Nome: ').strip().title()
         
-        if valida_nome(nome):
-            return nome
+        if nome != '0':
+            if valida_nome(nome):
+                return nome
+            else:
+                valido = False
         else:
-            valido = False
-
+            return False
+        
 def obter_cnpj():
     valido = True
     ja_cadastrado = False
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO, 36)
+        titulo_obtencao(36)
         if not valido:
             mensagem_input_invalido('CNPJ Inválido!', 36)
             valido = True
@@ -68,12 +75,15 @@ def obter_cnpj():
             ja_cadastrado = False
         cnpj = input('Insira o CNPJ (XX.XXX.XXX/YYYY-ZZ): ').strip()
         
-        if valida_cnpj(cnpj):
-            ja_cadastrado = dado_ja_cadastrado('Hospital', 'cnpj', cnpj)
-            if not ja_cadastrado:
-                return cnpj
+        if cnpj != '0':
+            if valida_cnpj(cnpj):
+                ja_cadastrado = dado_ja_cadastrado('Hospital', 'cnpj', cnpj)
+                if not ja_cadastrado:
+                    return cnpj
+            else:
+                valido = False
         else:
-            valido = False
+            return False
 
 def obter_telefone():
     valido = True
@@ -81,7 +91,7 @@ def obter_telefone():
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO, 36)
+        titulo_obtencao(36)
         if not valido:
             mensagem_input_invalido('Telefone Inválido!', 36)
             valido = True
@@ -90,62 +100,74 @@ def obter_telefone():
             ja_cadastrado = False
         telefone = input('Insira o Telefone (XXXXX-XXXX): ').strip()
         
-        if valida_telefone(telefone):
-            ja_cadastrado = dado_ja_cadastrado('Hospital', 'telefone', telefone)
-            if not ja_cadastrado:
-                return telefone
+        if telefone != '0':
+            if valida_telefone(telefone):
+                ja_cadastrado = dado_ja_cadastrado('Hospital', 'telefone', telefone)
+                if not ja_cadastrado:
+                    return telefone
+            else:
+                valido = False
         else:
-            valido = False
+            return False
 
 def obter_endereco():
     valido = True
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO)
+        titulo_obtencao()
         if not valido:
             mensagem_input_invalido('Rua Inválida!')
             valido = True
         rua = input('Insira a rua (endereco): ').strip().title()
         
-        if valida_nome(rua):
-            break
+        if rua != '0':
+            if valida_nome(rua):
+                break
+            else:
+                valido = False
         else:
-            valido = False
+            return False
             
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO)
+        titulo_obtencao()
         if not valido:
             mensagem_input_invalido('Bairro Inválido!')
             valido = True
         bairro = input('Insira o bairro (endereco): ').strip().title()
         
-        if valida_nome(bairro):
-            break
+        if bairro != '0':
+            if valida_nome(bairro):
+                break
+            else:
+                valido = False
         else:
-            valido = False
-            
+            return False  
+          
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO)
+        titulo_obtencao()
         if not valido:
             mensagem_input_invalido('Cidade Inválida!')
             valido = True
         cidade = input('Insira a Cidade (endereco): ').strip().title()
         
-        if valida_nome(cidade):
-            break
+        if cidade != '0':
+            if valida_nome(cidade):
+                break
+            else:
+                valido = False
         else:
-            valido = False
-    
+            return False
+        
     ja_cadastrado = False
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO)
+        titulo_obtencao()
         if not valido:
             mensagem_input_invalido('CEP Inválido!')
             valido = True
@@ -154,12 +176,15 @@ def obter_endereco():
             
         cep = input('Insira o CEP (XXXXX-XXX): ').strip()
         
-        if valida_cep(cep.strip()):
-            ja_cadastrado = dado_ja_cadastrado('Hospital', 'cep', cep)
-            if not ja_cadastrado:
-                break
+        if cep != '0':
+            if valida_cep(cep.strip()):
+                ja_cadastrado = dado_ja_cadastrado('Hospital', 'cep', cep)
+                if not ja_cadastrado:
+                    break
+            else:
+                valido = False        
         else:
-            valido = False        
+            return False
     
     return Endereco(rua, bairro, cidade, cep)
 
@@ -250,6 +275,11 @@ def exclui_hospital():
         pausa()
         
 #------------------------------------------------------
+
+def titulo_obtencao(tam=24):
+    imprime_titulo(TITULO_INSERCAO, tam)
+    print('0 - Cancelar')
+    imprime_linha(tam)
 
 def mensagem_erro(entidade:str, operacao:str):
     limpa_tela()
