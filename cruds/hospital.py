@@ -1,29 +1,29 @@
 from utils.db_operacoes import altera_db, pega_info_db
 from classes import Endereco, Hospital
-from utils.utils_geral import *
-from utils.utils_menus import *
+from utils.geral import *
 from utils.validacoes import *
+from utils.obtencoes import *
 
-TITULO_INSERCAO = 'INSERIR HOSPITAL'
 TITULO_EXCLUSAO = 'EXCLUIR HOSPITAL'
 
 def insere_hospital():
+    titulo = 'INSERIR HOSPITAL'
     while True:
-        nome = obter_nome()
+        nome = obter_nome(titulo)
         if not nome: break
           
-        cnpj = obter_cnpj()
+        cnpj = obter_cnpj(titulo)
         if not cnpj: break
         
-        endereco = obter_endereco()
+        endereco = obter_endereco(titulo)
         if not endereco: break
         
-        telefone = obter_telefone()
+        telefone = obter_telefone(titulo)
         if not telefone: break
         
         hospital = Hospital(cnpj, nome, endereco, telefone)
         
-        if confirma_dados(hospital):
+        if confirma_dados(titulo, hospital):
             comando = '''INSERT INTO Hospital (cnpj, nome, rua, bairro, cidade, cep, telefone) 
                         VALUES (:cnpj, :nome, :rua, :bairro, :cidade, :cep, :telefone);'''
             dados = {"cnpj": hospital.cnpj,
@@ -34,104 +34,21 @@ def insere_hospital():
                      "cep": hospital.endereco.cep,
                      "telefone": hospital.telefone}
             
-            if altera_db(comando, dados):
-                mensagem_sucesso('Hospital', 'Inserido')
+            inserido = altera_db(comando, dados)
+            if inserido:
+                mensagem_sucesso(titulo, 'Hospital', 'Inserido')
                 break
             else:
-                mensagem_erro('Hospital', 'Inserir')
+                mensagem_erro(titulo, 'Hospital', 'Inserir')
                 break
 
-def obter_nome():
-    valido = True
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao()
-        if not valido:
-            mensagem_input_invalido('Nome Invalido!')
-            valido = True
-        nome = input('Insira o Nome: ').strip().title()
-        
-        if nome != '0':
-            if valida_nome(nome):
-                return nome
-            else:
-                valido = False
-        else:
-            return False
-        
-def obter_cnpj():
-    valido = True
-    ja_cadastrado = False
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(tam=36)
-        if not valido:
-            mensagem_input_invalido('CNPJ Inválido!', 36)
-            valido = True
-        if ja_cadastrado:
-            mensagem_input_invalido('CNPJ Ja Cadastrado!', 36)
-            ja_cadastrado = False
-        cnpj = input('Insira o CNPJ (XX.XXX.XXX/YYYY-ZZ): ').strip()
-        
-        if cnpj != '0':
-            if valida_cnpj(cnpj):
-                ja_cadastrado = dado_ja_cadastrado('Hospital', 'cnpj', cnpj)
-                if not ja_cadastrado:
-                    return cnpj
-            else:
-                valido = False
-        else:
-            return False
-
-def obter_telefone():
-    valido = True
-    ja_cadastrado = False
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(tam=36)
-        if not valido:
-            mensagem_input_invalido('Telefone Inválido!', 36)
-            valido = True
-        if ja_cadastrado:
-            mensagem_input_invalido('Telefone Ja Cadastrado!', 36)
-            ja_cadastrado = False
-        telefone = input('Insira o Telefone (XXXXX-XXXX): ').strip()
-        
-        if telefone != '0':
-            if valida_telefone(telefone):
-                ja_cadastrado = dado_ja_cadastrado('Hospital', 'telefone', telefone)
-                if not ja_cadastrado:
-                    return telefone
-            else:
-                valido = False
-        else:
-            return False
-
-def obter_endereco():
-    rua = obter_rua()
-    if not rua: return False
-    
-    bairro = obter_bairro()
-    if not bairro: return False
-          
-    cidade = obter_cidade()
-    if not cidade: return False
-        
-    cep = obter_cep()
-    if not cep: return False
-    
-    return Endereco(rua, bairro, cidade, cep)
-
-def confirma_dados(hospital:Hospital):
+def confirma_dados(titulo:str, hospital:Hospital):
     tam_linha = 36
     valido = True
     while True:
         limpa_tela()
         
-        imprime_titulo(TITULO_INSERCAO, tam_linha)
+        imprime_titulo(titulo, tam_linha)
         print(f'Nome: {hospital.nome}')
         print(f'CNPJ: {hospital.cnpj}')
         print('Endereco:')
@@ -180,7 +97,7 @@ def menu_relatorios_hospital():
         elif opcao == 2:
             lista_Medicos_Hospital()
         elif opcao == 3:
-            pass
+            lista_Enfermeiros_Hospital()
         elif opcao == 0:
             break
         else:
@@ -257,7 +174,10 @@ def lista_Medicos_Hospital():
         imprime_titulo(titulo)
         print('Ainda não há Hospitais Cadastrados!')
         pausa()
-    
+
+def lista_Enfermeiros_Hospital():
+    pass
+
 #------------------------------------------------------
 
 def altera_hospital():
@@ -386,8 +306,10 @@ def altera_hospital():
         
         if dado != 0 and opcao != 0:
             comando = '''UPDATE Hospital SET {coluna} = :dado WHERE cnpj = :cnpj'''.format(coluna=tipo_dado)
-            dados = {'cnpj': chave_hospital, 'tipo_dado': tipo_dado, 'dado': dado}
-            if altera_db(comando, dados):
+            dados = {'cnpj': chave_hospital, 'dado': dado}
+            
+            atualizado = altera_db(comando, dados)
+            if atualizado:
                 mensagem_sucesso('Hospital', 'Alterado')
             else:
                 mensagem_erro('Hospital', 'Alterar')
@@ -421,16 +343,19 @@ def exclui_hospital():
                 mensagem_input_invalido('Opcao Invalida!')
                 valido = True
             
-            opcao = obter_opcao(qnt_hospitais)
+            opcao = obter_opcao(qnt_hospitais) - 1
             
             if opcao == -1:
                 valido = False
             else:
+                cnpj_hospital = hospitais[opcao][0]
                 break
         
         if opcao != 0:
             comando = '''DELETE FROM Hospital WHERE cnpj=:cnpj'''
-            if altera_db(comando, {'cnpj':hospitais[opcao - 1][0]}):
+            excluido = altera_db(comando, {'cnpj':cnpj_hospital})
+            
+            if excluido:
                 mensagem_sucesso('Hospital', 'Excluido')
             else:
                 mensagem_erro('Hospital', 'Excluir')
@@ -441,106 +366,3 @@ def exclui_hospital():
         pausa()
         
 #------------------------------------------------------
-
-def obter_rua(titulo=TITULO_INSERCAO):
-    valido = True
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(titulo)
-        if not valido:
-            mensagem_input_invalido('Rua Inválida!')
-            valido = True
-        rua = input('Insira a rua (endereco): ').strip().title()
-        
-        if rua != '0':
-            if valida_nome(rua):
-                return rua
-            else:
-                valido = False
-        else:
-            return False
-
-def obter_bairro(titulo=TITULO_INSERCAO):
-    valido = True
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(titulo)
-        if not valido:
-            mensagem_input_invalido('Bairro Inválido!')
-            valido = True
-        bairro = input('Insira o bairro (endereco): ').strip().title()
-        
-        if bairro != '0':
-            if valida_nome(bairro):
-                return bairro
-            else:
-                valido = False
-        else:
-            return False  
-
-def obter_cidade(titulo=TITULO_INSERCAO):
-    valido = True
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(titulo)
-        if not valido:
-            mensagem_input_invalido('Cidade Inválida!')
-            valido = True
-        cidade = input('Insira a Cidade (endereco): ').strip().title()
-        
-        if cidade != '0':
-            if valida_nome(cidade):
-                return cidade
-            else:
-                valido = False
-        else:
-            return False
-
-def obter_cep(titulo=TITULO_INSERCAO):
-    valido = True
-    ja_cadastrado = False
-    while True:
-        limpa_tela()
-        
-        titulo_obtencao(titulo)
-        if not valido:
-            mensagem_input_invalido('CEP Inválido!')
-            valido = True
-        if ja_cadastrado:
-            mensagem_input_invalido('CEP Ja Registrado!')
-            
-        cep = input('Insira o CEP (XXXXX-XXX): ').strip()
-        
-        if cep != '0':
-            if valida_cep(cep.strip()):
-                ja_cadastrado = dado_ja_cadastrado('Hospital', 'cep', cep)
-                if not ja_cadastrado:
-                    return cep
-            else:
-                valido = False        
-        else:
-            return False
-
-def titulo_obtencao(titulo=TITULO_INSERCAO, tam=24):
-    imprime_titulo(titulo, tam)
-    print('0 - Cancelar')
-    imprime_linha(tam)
-
-def mensagem_erro(entidade:str, operacao:str):
-    limpa_tela()
-    
-    imprime_titulo(TITULO_INSERCAO, 36)
-    print(f'Não foi possível {operacao} o {entidade}!')
-    
-    pausa()
-
-def mensagem_sucesso(entidade:str, operacao:str):
-    limpa_tela()
-    
-    imprime_titulo(TITULO_INSERCAO, 36)
-    print(f'{entidade} {operacao} com Sucesso!')
-    
-    pausa()

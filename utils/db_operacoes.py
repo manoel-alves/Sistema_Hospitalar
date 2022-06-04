@@ -1,6 +1,6 @@
 import sqlite3 as sqlite
 
-from utils.utils_geral import *
+from utils.geral import *
 
 DB = 'database.db'
 DB_STRUCTURE = 'init_db_commands.txt'

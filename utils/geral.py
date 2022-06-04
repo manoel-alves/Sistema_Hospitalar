@@ -28,3 +28,19 @@ def mensagem_input_invalido(mensagem:str, tamanho_total=24):
         print(' ' * quant_espacos + f'>>> {mensagem} <<<')
     imprime_linha(tamanho_total)
     
+def mensagem_erro(titulo:str, entidade:str, operacao:str):
+    limpa_tela()
+    
+    imprime_titulo(titulo, 36)
+    print(f'Não foi possível {operacao} o {entidade}!')
+    
+    pausa()
+
+def mensagem_sucesso(titulo:str, entidade:str, operacao:str):
+    limpa_tela()
+    
+    imprime_titulo(titulo, 36)
+    print(f'{entidade} {operacao} com Sucesso!')
+    
+    pausa()
+    

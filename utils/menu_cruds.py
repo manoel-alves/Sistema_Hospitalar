@@ -1,5 +1,5 @@
-from utils.utils_geral import *
-from utils.utils_menus import *
+from utils.geral import *
+from utils.obtencoes import obter_opcao
 from cruds.hospital import insere_hospital, altera_hospital, menu_relatorios_hospital, exclui_hospital
 from cruds.medico import insere_medico, altera_medico, menu_relatorios_medico, exclui_medico
 from cruds.enfermeiro import insere_enfermeiro, altera_enfermeiro, menu_relatorios_enfermeiro, exclui_enfermeiro
@@ -13,7 +13,9 @@ def crud_hospital():
         
         imprime_menu_crud("Hospital")
         
-        valido = checa_erro(valido, 'Opcao Invalida!')
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!')
+            valido = True
             
         opcao = obter_opcao(quant_opcoes)
             
@@ -38,7 +40,9 @@ def crud_medico():
         
         imprime_menu_crud("Medico")
         
-        valido = checa_erro(valido, 'Opcao Invalida!')
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!')
+            valido = True
             
         opcao = obter_opcao(quant_opcoes)
             
@@ -63,7 +67,9 @@ def crud_enfermeiro():
         
         imprime_menu_crud("Enfermeiro")
         
-        valido = checa_erro(valido, 'Opcao Invalida!')
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!')
+            valido = True
             
         opcao = obter_opcao(quant_opcoes)
             
@@ -88,7 +94,9 @@ def crud_paciente():
         
         imprime_menu_crud("Paciente")
         
-        valido = checa_erro(valido, 'Opcao Invalida!')
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!')
+            valido = True
             
         opcao = obter_opcao(quant_opcoes)
             
@@ -104,3 +112,13 @@ def crud_paciente():
             break
         else:
             valido = False
+            
+def imprime_menu_crud(titulo: str):
+    imprime_titulo(f'CRUD {titulo}')
+    print('1 - Inserir')
+    print('2 - Alterar')
+    print('3 - Relatorios')
+    print('4 - Excluir')
+    imprime_linha()
+    print('0 - Voltar')
+    imprime_linha()

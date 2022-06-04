@@ -1,6 +1,6 @@
 from utils.db_operacoes import altera_db, pega_info_db
 from classes import Endereco, Medico
-from utils.utils_geral import *
+from utils.geral import *
 from utils.validacoes import *
 
 def insere_medico():

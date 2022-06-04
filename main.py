@@ -1,6 +1,5 @@
 from utils.db_operacoes import inicializa_database
-from utils.utils_geral import *
-from utils.utils_menus import *
+from utils.geral import *
 from utils.menu_cruds import *
 
 def main():
