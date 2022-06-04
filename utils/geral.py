@@ -44,3 +44,12 @@ def mensagem_sucesso(titulo:str, entidade:str, operacao:str):
     
     pausa()
     
+def mensagem_query_vazia(titulo:str, mensagem:str):
+    tam_linha = len(mensagem)
+    
+    limpa_tela()
+    imprime_titulo(titulo, tam_linha)
+    print(mensagem)
+    imprime_linha(tam_linha)
+    pausa()
+    

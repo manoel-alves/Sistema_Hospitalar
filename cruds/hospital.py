@@ -102,13 +102,15 @@ def menu_relatorios_hospital():
             valido = False
 
 def lista_hospitais():
+    titulo = 'LISTA DE HOSPITAIS'
+    
     comando = '''SELECT * FROM Hospital'''
     hospitais = pega_info_db(comando)
     
     qnt_linhas = 36
     if len(hospitais) != 0:
         limpa_tela()
-        imprime_titulo('LISTA DE HOSPITAIS', qnt_linhas)
+        imprime_titulo(titulo, qnt_linhas)
         for hospital in hospitais:
             print(f'Nome: {hospital[1]}')
             print(f'CNPJ: {hospital[0]}')
@@ -119,13 +121,10 @@ def lista_hospitais():
             print(f'         CEP: {hospital[5]}')
             print(f'Telefone: {hospital[6]}')
             imprime_linha(qnt_linhas)
-        pausa()
-            
+        pausa()  
     else:
-        limpa_tela()
-        imprime_titulo('LISTA DE HOSPITAIS', 36)
-        print('Ainda não há Hospitais Cadastrados!')
-        pausa()
+        mensagem = 'Ainda não há Hospitais Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
         
 def lista_Medicos_Hospital():
     titulo = 'MEDICOS X HOSPITAL'
@@ -157,21 +156,28 @@ def lista_Medicos_Hospital():
                 break
         
         if opcao != 0:
+            
+            # >>>>>>>>> Bug <<<<<<<<< (não retorna nenhum registro, mesmo existindo)
             comando = '''SELECT Medico.crm, Medico.nome FROM Medico JOIN Hospital_x_Medico as h_m ON Medico.crm = h_m.crm WHERE h_m.cnpj = :cnpj;'''
             medicos = pega_info_db(comando, {"cnpj": hospitais[opcao - 1][0]})
             
-            limpa_tela()
-            imprime_titulo(titulo)
-            for medico in medicos:
-                print(f'Nome: {medico[1]}')
-                print(f'CRM: {medico[0]}')
-                imprime_linha()
+            print(medicos)
             pausa()
+            
+            if medicos != []:
+                limpa_tela()
+                imprime_titulo(titulo)
+                for medico in medicos:
+                    print(f'Nome: {medico[1]}')
+                    print(f'CRM: {medico[0]}')
+                    imprime_linha()
+                pausa()
+            else:
+                mensagem = 'Ainda não há Medicos Cadastrados neste Hospital!'
+                mensagem_query_vazia(titulo, mensagem)
     else:
-        limpa_tela()
-        imprime_titulo(titulo)
-        print('Ainda não há Hospitais Cadastrados!')
-        pausa()
+        mensagem = 'Ainda não há Hospitais Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_Enfermeiros_Hospital():
     pass
@@ -312,10 +318,8 @@ def altera_hospital():
             else:
                 mensagem_erro('Hospital', 'Alterar')
     else:
-        limpa_tela()
-        imprime_titulo(titulo, 36)
-        print('Ainda não há Hospitais Cadastrados!')
-        pausa()
+        mensagem = 'Ainda não há Hospitais Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
@@ -360,9 +364,7 @@ def exclui_hospital():
             else:
                 mensagem_erro('Hospital', 'Excluir')
     else:
-        limpa_tela()
-        imprime_titulo(titulo, 36)
-        print('Ainda não há Hospitais Cadastrados!')
-        pausa()
+        mensagem = 'Ainda não há Hospitais Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
         
 #------------------------------------------------------
