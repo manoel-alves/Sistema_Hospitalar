@@ -219,11 +219,62 @@ def confirma_dados(hospital:Hospital):
 #------------------------------------------------------
 
 def menu_relatorios_hospital():
-    pass
+    quant_opcoes = 3
+    qnt_linhas = 36
+    valido = True
+    while True:
+        limpa_tela()
+        
+        imprime_titulo('RELATORIOS HOSPITAL', qnt_linhas)
+        print('1 - Listar Hospitais')
+        print('2 - Listar Medicos do Hospital')
+        print('3 - Listar Enfermeiros do Hospital')
+        imprime_linha(qnt_linhas)
+        print('0 - Voltar')
+        imprime_linha(qnt_linhas)
+        
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!', 36)
+           
+        opcao = obter_opcao(quant_opcoes)
+            
+        if opcao == 1:
+            lista_hospitais()
+        elif opcao == 2:
+            pass
+        elif opcao == 3:
+            pass
+        elif opcao == 0:
+            break
+        else:
+            valido = False
 
 def lista_hospitais():
-    pass
-
+    comando = '''SELECT * FROM Hospital'''
+    hospitais = pega_info_db(comando)
+    
+    qnt_linhas = 36
+    if len(hospitais) != 0:
+        limpa_tela()
+        imprime_titulo('LISTA DE HOSPITAIS', qnt_linhas)
+        for hospital in hospitais:
+            print(f'Nome: {hospital[1]}')
+            print(f'CNPJ: {hospital[0]}')
+            print('Endereco:')
+            print(f'         Rua: {hospital[2]}')
+            print(f'         Bairro: {hospital[3]}')
+            print(f'         Cidade: {hospital[4]}')
+            print(f'         CEP: {hospital[5]}')
+            print(f'Telefone: {hospital[6]}')
+            imprime_linha(qnt_linhas)
+        pausa()
+            
+    else:
+        limpa_tela()
+        imprime_titulo('LISTA DE HOSPITAIS', 36)
+        print('Ainda não há Hospitais Cadastrados!')
+        pausa()
+        
 #------------------------------------------------------
 
 def altera_hospital():
@@ -235,9 +286,7 @@ def exclui_hospital():
     comando = '''SELECT * FROM Hospital'''
     hospitais = pega_info_db(comando)
     
-    qnt_hospitais = 0
-    for _ in hospitais:
-        qnt_hospitais += 1
+    qnt_hospitais = len(hospitais)
     
     if qnt_hospitais != 0:
         valido = True
