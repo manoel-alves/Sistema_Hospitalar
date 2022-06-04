@@ -4,12 +4,12 @@ def obter_opcao(quant_opcoes):
     try:
         opcao = int(input('Opcao: '))
         
-        if opcao <= 0 or opcao > quant_opcoes:
-            return 0
+        if opcao < 0 or opcao > quant_opcoes:
+            return -1
                 
         return opcao
     except ValueError:
-        return 0
+        return -1
 
 def imprime_menu_crud(titulo: str):
     imprime_titulo(f'CRUD {titulo}')
@@ -17,7 +17,8 @@ def imprime_menu_crud(titulo: str):
     print('2 - Alterar')
     print('3 - Relatorios')
     print('4 - Excluir')
-    print('5 - Voltar')
+    imprime_linha()
+    print('0 - Voltar')
     imprime_linha()
 
 def checa_erro(valido, mensagem):

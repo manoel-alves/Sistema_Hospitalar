@@ -6,7 +6,7 @@ from utils.menu_cruds import *
 def main():
     inicializa_database()
     
-    quant_opcoes = 5
+    quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
@@ -26,7 +26,7 @@ def main():
             crud_enfermeiro()
         elif opcao == 4:
             crud_paciente()
-        elif opcao == 5:
+        elif opcao == 0:
             break
         else:
             valido = False
@@ -39,12 +39,15 @@ def imprime_menu_principal():
     print('2 - Medicos')
     print('3 - Enfermeiros')
     print('4 - Pacientes')
-    print('5 - Sair')
+    imprime_linha()
+    print('0 - Sair')
     imprime_linha()
 
 def mensagem_finalizacao():
     limpa_tela()
+    imprime_titulo('SISTEMA HOSPITALAR', 48)
     print("Obrigado por utilizar o programa. Até a próxima!")
+    imprime_linha(48)
     pausa()
     limpa_tela()
 

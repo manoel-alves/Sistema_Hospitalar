@@ -6,7 +6,7 @@ from cruds.enfermeiro import insere_enfermeiro, altera_enfermeiro, menu_relatori
 from cruds.paciente import insere_paciente, altera_paciente, menu_relatorios_paciente, exclui_paciente
 
 def crud_hospital():
-    quant_opcoes = 5
+    quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
@@ -25,13 +25,13 @@ def crud_hospital():
             menu_relatorios_hospital()
         elif opcao == 4:
             exclui_hospital()
-        elif opcao == 5:
+        elif opcao == 0:
             break
         else:
             valido = False
 
 def crud_medico():
-    quant_opcoes = 5
+    quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
@@ -50,18 +50,18 @@ def crud_medico():
             menu_relatorios_medico()
         elif opcao == 4:
             exclui_medico()
-        elif opcao == 5:
+        elif opcao == 0:
             break
         else:
             valido = False
 
 def crud_enfermeiro():
-    quant_opcoes = 5
+    quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
         
-        imprime_menu_crud("Hospital")
+        imprime_menu_crud("Enfermeiro")
         
         valido = checa_erro(valido, 'Opcao Invalida!')
             
@@ -75,18 +75,18 @@ def crud_enfermeiro():
             menu_relatorios_enfermeiro()
         elif opcao == 4:
             exclui_enfermeiro()
-        elif opcao == 5:
+        elif opcao == 0:
             break
         else:
             valido = False
 
 def crud_paciente():
-    quant_opcoes = 5
+    quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
         
-        imprime_menu_crud("Hospital")
+        imprime_menu_crud("Paciente")
         
         valido = checa_erro(valido, 'Opcao Invalida!')
             
@@ -100,7 +100,7 @@ def crud_paciente():
             menu_relatorios_paciente()
         elif opcao == 4:
             exclui_paciente()
-        elif opcao == 5:
+        elif opcao == 0:
             break
         else:
             valido = False

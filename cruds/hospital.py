@@ -1,9 +1,11 @@
 from utils.db_operacoes import altera_db, pega_info_db
 from classes import Endereco, Hospital
 from utils.utils_geral import *
+from utils.utils_menus import *
 from utils.validacoes import *
 
 TITULO_INSERCAO = 'INSERIR HOSPITAL'
+TITULO_EXCLUSAO = 'EXCLUIR HOSPITAL'
 
 def insere_hospital():
     while True:
@@ -29,10 +31,10 @@ def insere_hospital():
                      "telefone": hospital.telefone}
             
             if altera_db(comando, dados):
-                mensagem_sucesso()
+                mensagem_sucesso('Hospital', 'Inserido')
                 break
             else:
-                mensagem_erro()
+                mensagem_erro('Hospital', 'Inserir')
                 break
 
 def obter_nome():
@@ -42,7 +44,7 @@ def obter_nome():
         
         imprime_titulo(TITULO_INSERCAO)
         if not valido:
-            mensagem_input_invalido('Nome Inválido!')
+            mensagem_input_invalido('Nome Invalido!')
             valido = True
         nome = input('Insira o Nome: ').strip().title()
         
@@ -189,22 +191,6 @@ def confirma_dados(hospital:Hospital):
         else:
             valido = False
     
-def mensagem_erro():
-    limpa_tela()
-    
-    imprime_titulo(TITULO_INSERCAO, 36)
-    print('Não foi possível Cadastrar o Hospital!')
-    
-    pausa()
-
-def mensagem_sucesso():
-    limpa_tela()
-    
-    imprime_titulo(TITULO_INSERCAO, 36)
-    print('Hospital Cadastrado com Sucesso!')
-    
-    pausa()
-
 #------------------------------------------------------
 
 def menu_relatorios_hospital():
@@ -212,7 +198,7 @@ def menu_relatorios_hospital():
 
 def lista_hospitais():
     pass
-    
+
 #------------------------------------------------------
 
 def altera_hospital():
@@ -221,5 +207,62 @@ def altera_hospital():
 #------------------------------------------------------
 
 def exclui_hospital():
-    pass
+    comando = '''SELECT * FROM Hospital'''
+    hospitais = pega_info_db(comando)
+    
+    qnt_hospitais = 0
+    for _ in hospitais:
+        qnt_hospitais += 1
+    
+    if qnt_hospitais != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(TITULO_EXCLUSAO)
+            for i, hospital in enumerate(hospitais):
+                print(f'{i + 1} - {hospital[1]}')
+            imprime_linha()
+            print('0 - Voltar')
+            imprime_linha()
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_hospitais)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                break
+        
+        if opcao != 0:
+            comando = '''DELETE FROM Hospital WHERE cnpj=:cnpj'''
+            if altera_db(comando, {'cnpj':hospitais[opcao - 1][0]}):
+                mensagem_sucesso('Hospital', 'Excluido')
+            else:
+                mensagem_erro('Hospital', 'Excluir')
+    else:
+        limpa_tela()
+        imprime_titulo(TITULO_EXCLUSAO, 36)
+        print('Ainda não há Hospitais Cadastrados!')
+        pausa()
+        
+#------------------------------------------------------
 
+def mensagem_erro(entidade:str, operacao:str):
+    limpa_tela()
+    
+    imprime_titulo(TITULO_INSERCAO, 36)
+    print(f'Não foi possível {operacao} o {entidade}!')
+    
+    pausa()
+
+def mensagem_sucesso(entidade:str, operacao:str):
+    limpa_tela()
+    
+    imprime_titulo(TITULO_INSERCAO, 36)
+    print(f'{entidade} {operacao} com Sucesso!')
+    
+    pausa()
