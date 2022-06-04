@@ -4,8 +4,6 @@ from utils.geral import *
 from utils.validacoes import *
 from utils.obtencoes import *
 
-TITULO_EXCLUSAO = 'EXCLUIR HOSPITAL'
-
 def insere_hospital():
     titulo = 'INSERIR HOSPITAL'
     while True:
@@ -322,6 +320,8 @@ def altera_hospital():
 #------------------------------------------------------
 
 def exclui_hospital():
+    titulo = 'EXCLUIR HOSPITAL'
+    
     comando = '''SELECT * FROM Hospital'''
     hospitais = pega_info_db(comando)
     
@@ -332,7 +332,7 @@ def exclui_hospital():
         while True:
             limpa_tela()
             
-            imprime_titulo(TITULO_EXCLUSAO)
+            imprime_titulo(titulo)
             for i, hospital in enumerate(hospitais):
                 print(f'{i + 1} - {hospital[1]}')
             imprime_linha()
@@ -361,7 +361,7 @@ def exclui_hospital():
                 mensagem_erro('Hospital', 'Excluir')
     else:
         limpa_tela()
-        imprime_titulo(TITULO_EXCLUSAO, 36)
+        imprime_titulo(titulo, 36)
         print('Ainda não há Hospitais Cadastrados!')
         pausa()
         
