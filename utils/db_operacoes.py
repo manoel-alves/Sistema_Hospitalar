@@ -60,7 +60,7 @@ def altera_db(comando:str, dados={}):
             conexao.close()
         return resultado
 
-def pega_info_db(comando:str):
+def pega_info_db(comando:str, dados={}):
     conexao = None
     cursor = None
     registros = []
@@ -68,7 +68,10 @@ def pega_info_db(comando:str):
         conexao = sqlite.connect(DB)
         cursor = conexao.cursor()
         
-        cursor.execute(comando)
+        if dados == {}:
+            cursor.execute(comando)
+        else:
+            cursor.execute(comando, dados)
         
         registros = cursor.fetchall()
         
