@@ -171,6 +171,31 @@ def obter_crm(titulo:str):
         else:
             return False
 
+def obter_coren(titulo:str):
+    valido = True
+    ja_cadastrado = False
+    while True:
+        limpa_tela()
+        
+        titulo_obtencao(titulo, tam=36)
+        if not valido:
+            mensagem_input_invalido('COREN Inválido!', 36)
+            valido = True
+        if ja_cadastrado:
+            mensagem_input_invalido('COREN Ja Cadastrado!', 36)
+            ja_cadastrado = False
+        coren = input('Insira o COREN (xxx.xxx.xxx): ').strip()
+        
+        if coren != '0':
+            if valida_coren(coren):
+                ja_cadastrado = dado_ja_cadastrado('Enfermeira', 'coren', coren)
+                if not ja_cadastrado:
+                    return coren
+            else:
+                valido = False
+        else:
+            return False
+
 def obter_cpf(titulo:str):
     entidades = ['Medico', 'Enfermeira', 'Paciente']
     

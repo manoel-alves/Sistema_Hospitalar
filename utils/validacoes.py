@@ -110,8 +110,9 @@ def valida_coren(coren:str):
         return False
     
     for i in range(len(coren)):
-        if i in [1, 5] and coren[i] != '.':
-            return False
+        if i in [3, 7]:
+            if coren[i] != '.':
+                return False
         else:
             if not coren[i].isdigit():
                 return False
