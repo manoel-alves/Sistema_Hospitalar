@@ -1,5 +1,5 @@
 from utils.db_operacoes import altera_db, pega_info_db
-from classes import *
+from classes import Medico, Endereco
 from utils.geral import *
 from utils.obtencoes import *
 from utils.validacoes import *
@@ -19,6 +19,9 @@ def insere_medico():
         
         endereco = obter_endereco(titulo)
         if not endereco: break
+        
+        telefone = obter_telefone(titulo)
+        if not telefone: break
         
         especialidade = obter_especialidade(titulo)
         if not especialidade: break
@@ -40,7 +43,19 @@ def insere_medico():
             medico_inserido = altera_db(comando, dados)
             
             if medico_inserido:
+                comando = '''INSERT INTO Telefone (numero, crm) VALUES (:numero, :crm)'''
+                dados = {'numero': telefone, 'crm': medico.crm}
+                
+                telefone_inserido = altera_db(comando, dados)
+            
+            if medico_inserido:
                 mensagem_sucesso(titulo, 'Medico', 'Inserido')
+                
+                if telefone_inserido:
+                    mensagem_sucesso(titulo, 'Telefone', 'Adicionado')
+                else:
+                    mensagem_erro(titulo, 'Telefone', 'Adicionar')
+                    
                 break
             else:
                 mensagem_erro(titulo, 'Medico', 'Inserir')
@@ -78,6 +93,7 @@ def confirma_dados(titulo:str, medico:Medico):
 
 def associa_medico_hospital():
     titulo = 'MEDICO X HOSPITAL'
+    tam_linha = 36
     
     comando = '''SELECT crm, nome FROM Medico'''
     medicos = pega_info_db(comando)
@@ -87,6 +103,7 @@ def associa_medico_hospital():
     
     qnt_medicos = len(medicos)
     qnt_hospitais = len(hospitais)
+    hospitais_associados = []
     
     if qnt_medicos != 0 and qnt_hospitais != 0:
         valido = True
@@ -94,18 +111,36 @@ def associa_medico_hospital():
         while True:
             limpa_tela()
             
-            imprime_titulo(titulo)
+            imprime_titulo(titulo, tam_linha)
             if alterna == 0:
                 print('Qual Medico?')
+                imprime_linha(tam_linha)
                 for i, medico in enumerate(medicos):
                     print(f'{i + 1} - {medico[1]}')
             else:
-                print('Trabalha em qual Hospital?')
-                for i, hospital in enumerate(hospitais):
-                    print(f'{i + 1} - {hospital[1]}')
-            imprime_linha()
+                if hospitais_associados == []:
+                    comando = '''SELECT h.cnpj FROM Hospital h JOIN Hospital_x_Medico h_m ON h.cnpj = h_m.cnpj WHERE h_m.crm = :crm'''
+                    hospitais_associados = pega_info_db(comando, {'crm': medico[0]})[0]
+                
+                if len(hospitais_associados) == qnt_hospitais:
+                    mensagem = 'Medico Ja Cadastrado em Todos os Hospitais!'
+                    mensagem_query_vazia(titulo, mensagem)
+                    return None
+                else:
+                
+                    print('Trabalha em qual Hospital?')
+                    imprime_linha(tam_linha)
+                    for i, hospital in enumerate(hospitais):
+                        
+                        ja_cadastrado = False
+                        if hospital[0] in hospitais_associados:
+                            ja_cadastrado = True 
+                            
+                        if not ja_cadastrado:
+                            print(f'{i + 1} - {hospital[1]}')
+            imprime_linha(tam_linha)
             print('0 - Voltar')
-            imprime_linha()
+            imprime_linha(tam_linha)
             
             if not valido:
                 mensagem_input_invalido('Opcao Invalida!')
@@ -148,6 +183,7 @@ def associa_medico_hospital():
 
 def Adiciona_Telefone(): 
     pass
+
 #------------------------------------------------------
 
 def altera_medico():
@@ -367,16 +403,212 @@ def lista_medicos():
         mensagem_query_vazia(titulo, mensagem)
 
 def lista_hospitais_medico():
-    pass
+    titulo = 'MEDICO X HOSPITAIS'
+    tam_linha = 37
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    if len(medicos) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]} ({medico[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(medicos))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                medico_crm = medicos[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT h.cnpj, h.nome, h.telefone FROM Hospital h JOIN Hospital_x_Medico h_m ON h.cnpj = h_m.cnpj WHERE h_m.crm = :crm;'''
+            hospitais = pega_info_db(comando, {"crm": medico_crm})
+            
+            if hospitais != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for hospital in hospitais:
+                    print(f'Hospital: {hospital[1]} ({hospital[0]})')
+                    print(f'Telefone: {hospital[2]}')
+                    imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Hospitais Cadastrados para este Médico!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_enfermeiras_medico():
-    pass
+    titulo = 'MEDICO X ENFERMEIRAS'
+    tam_linha = 37
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    if len(medicos) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]} ({medico[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(medicos))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                medico_crm = medicos[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT e.coren, e.nome FROM Enfermeira e JOIN Medico_x_Enfermeira m_e ON e.coren = m_e.coren WHERE m_e.crm = :crm;'''
+            enfermeiras = pega_info_db(comando, {"crm": medico_crm})
+            
+            if enfermeiras != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for enfermeira in enfermeiras:
+                    print(f'Hospital: {enfermeira[1]}')
+                    print(f'Coren: {enfermeira[0]}')
+                    imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Enfermeiras Cadastradas para este Médico!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_pacientes_medico():
-    pass
+    titulo = 'MEDICO X PACIENTES'
+    tam_linha = 37
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    if len(medicos) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]} ({medico[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(medicos))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                medico_crm = medicos[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT p.cpf, p.nome FROM Paciente p JOIN Medico_x_Paciente m_p ON p.cpf = m_p.cpf WHERE m_p.crm = :crm;'''
+            pacientes = pega_info_db(comando, {"crm": medico_crm})
+            
+            if pacientes != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for paciente in pacientes:
+                    comando = '''SELECT t.cid, t.data FROM Tratamento t JOIN Paciente p ON t.cpf = :cpf WHERE t.crm = :crm;'''
+                    tratamentos = pega_info_db(comando, {"cpf": paciente[0], 'crm': medico_crm})
+                    
+                    print(f'Paciente: {paciente[1]} ({paciente[0]})')
+                    print('Tratamentos:')
+                    for tratamento in tratamentos:
+                        print(f'            CID: {tratamento[0]}')
+                        print(f'            Data: {tratamento[1]}')
+                        print(f'            ----------------')
+                    imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Pacientes Cadastrados para este Médico!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_telefones_medico():
-    pass
+    titulo = 'MEDICO X TELEFONES'
+    tam_linha = 37
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    if len(medicos) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]} ({medico[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(medicos))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                medico_crm = medicos[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT t.numero FROM Telefone t WHERE t.crm = :crm;'''
+            telefones = pega_info_db(comando, {"crm": medico_crm})
+            
+            if telefones != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for telefone in telefones:
+                    print(f'Telefones de {medico[1]}:')
+                    imprime_linha(tam_linha)
+                    print(f'-> {telefone[0]}')
+                imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Telefones Cadastrados para este Médico!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
@@ -413,10 +645,9 @@ def exclui_medico():
                 break
         
         if opcao != 0:
-            
-            comando = '''DELETE FROM Hospital_x_Medico WHERE crm=:crm'''
-            altera_db(comando, {'crm':crm_medico})
-            
+
+            exclui_dependencias()
+                        
             comando = '''DELETE FROM Medico WHERE crm=:crm'''
             excluido = altera_db(comando, {'crm':crm_medico})
             
@@ -427,3 +658,6 @@ def exclui_medico():
     else:
         mensagem = 'Ainda não há Medicos Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
+        
+def exclui_dependencias():
+    pass

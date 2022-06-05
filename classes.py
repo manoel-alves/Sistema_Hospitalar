@@ -21,8 +21,11 @@ class Medico():
         self.especialidade = especialidade
 
 class Enfermeira():
-    def __init__(self):
-        pass    
+    def __init__(self, coren:str, cpf:str, nome:str, endereco:Endereco):
+        self.coren = coren
+        self.cpf = cpf
+        self.nome = nome
+        self.endereco = endereco  
     
 class Paciente():
     def __init__(self):
