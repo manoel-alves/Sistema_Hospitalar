@@ -146,6 +146,8 @@ def associa_medico_hospital():
             mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
 
+def Adiciona_Telefone(): 
+    pass
 #------------------------------------------------------
 
 def altera_medico():
@@ -299,10 +301,70 @@ def altera_medico():
 #------------------------------------------------------
 
 def menu_relatorios_medico():
-    pass
+    quant_opcoes = 5
+    qnt_linhas = 44
+    
+    valido = True
+    while True:
+        limpa_tela()
+        
+        imprime_titulo('RELATORIOS MEDICO', qnt_linhas)
+        print('1 - Listar Medicos')
+        print('2 - Listar Hospitais que o medico trabalha')
+        print('3 - Listar Enfermeiras que auxiliam o medico')
+        print('4 - Listar Pacientes do medico')
+        print('5 - Listar Telefones do medico')
+        imprime_linha(qnt_linhas)
+        print('0 - Voltar')
+        imprime_linha(qnt_linhas)
+        
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!', qnt_linhas)
+           
+        opcao = obter_opcao(quant_opcoes)
+            
+        if opcao == 1:
+            lista_medicos()
+        elif opcao == 2:
+            lista_hospitais_medico()
+        elif opcao == 3:
+            lista_enfermeiras_medico()
+        elif opcao == 4:
+            lista_pacientes_medico()
+        elif opcao == 5:
+            lista_telefones_medico()
+        elif opcao == 0:
+            break
+        else:
+            valido = False
 
 def lista_medicos():
-    pass
+    titulo = 'LISTA DE MEDICOS'
+    
+    comando = '''SELECT * FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    qnt_linhas = 36
+    if len(medicos) != 0:
+        limpa_tela()
+        imprime_titulo(titulo, qnt_linhas)
+        for medico in medicos:
+            print(f'Nome: {medico[2]}')
+            print(f'CRM: {medico[0]}')
+            print(f'CPF: {medico[1]}')
+            print('Endereco:')
+            print(f'         Rua: {medico[3]}')
+            print(f'         Bairro: {medico[4]}')
+            print(f'         Cidade: {medico[5]}')
+            print(f'         CEP: {medico[6]}')
+            comando = '''SELECT titulo FROM Especialidade WHERE id_Especialidade = :id'''
+            especialidade = pega_info_db(comando, {'id':medico[7]})[0][0]
+            print(f'Especialidade: {especialidade}')
+            imprime_linha(qnt_linhas)
+        pausa()  
+    else:
+        mensagem = 'Ainda não ha Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_hospitais_medico():
     pass

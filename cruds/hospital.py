@@ -86,7 +86,7 @@ def menu_relatorios_hospital():
         imprime_linha(qnt_linhas)
         
         if not valido:
-            mensagem_input_invalido('Opcao Invalida!', 36)
+            mensagem_input_invalido('Opcao Invalida!', qnt_linhas)
            
         opcao = obter_opcao(quant_opcoes)
             
