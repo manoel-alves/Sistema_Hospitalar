@@ -247,8 +247,6 @@ def obter_especialidade(titulo:str):
         else:
             if opcao != -1:
                 especialidade = especialidades[opcao - 1][1]
-                print(especialidade)
-                pausa()
                 break 
             else:
                 valido = False

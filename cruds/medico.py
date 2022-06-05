@@ -23,9 +23,6 @@ def insere_medico():
         especialidade = obter_especialidade(titulo)
         if not especialidade: break
         
-        print(especialidade)
-        pausa()
-
         medico = Medico(crm, cpf, nome, endereco, especialidade)
         
         if confirma_dados(titulo, medico):
@@ -88,4 +85,45 @@ def menu_relatorios_medico():
     pass
 
 def exclui_medico():
-    pass
+    titulo = 'EXCLUIR MEDICO'
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    qnt_medicos = len(medicos)
+    
+    if qnt_medicos != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]}')
+            imprime_linha()
+            print('0 - Voltar')
+            imprime_linha()
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_medicos)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                crm_medico = medicos[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''DELETE FROM Medico WHERE crm=:crm'''
+            excluido = altera_db(comando, {'crm':crm_medico})
+            
+            if excluido:
+                mensagem_sucesso(titulo, 'Medico', 'Excluido')
+            else:
+                mensagem_erro(titulo, 'Medico', 'Excluir')
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
