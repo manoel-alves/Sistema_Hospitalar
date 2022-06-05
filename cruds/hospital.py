@@ -80,7 +80,7 @@ def menu_relatorios_hospital():
         imprime_titulo('RELATORIOS HOSPITAL', qnt_linhas)
         print('1 - Listar Hospitais')
         print('2 - Listar Medicos do Hospital')
-        print('3 - Listar Enfermeiros do Hospital')
+        print('3 - Listar Enfermeiras do Hospital')
         imprime_linha(qnt_linhas)
         print('0 - Voltar')
         imprime_linha(qnt_linhas)
@@ -95,7 +95,7 @@ def menu_relatorios_hospital():
         elif opcao == 2:
             lista_Medicos_Hospital()
         elif opcao == 3:
-            lista_Enfermeiros_Hospital()
+            lista_Enfermeiras_Hospital()
         elif opcao == 0:
             break
         else:
@@ -127,7 +127,7 @@ def lista_hospitais():
         mensagem_query_vazia(titulo, mensagem)
         
 def lista_Medicos_Hospital():
-    titulo = 'HOSPITAL X MEDICO'
+    titulo = 'HOSPITAL X MEDICOS'
     tam_linha = 36
     
     comando = '''SELECT * FROM Hospital'''
@@ -175,8 +175,55 @@ def lista_Medicos_Hospital():
         mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
 
-def lista_Enfermeiros_Hospital():
-    pass
+def lista_Enfermeiras_Hospital():
+    titulo = 'HOSPITAL X ENFERMEIRAS'
+    tam_linha = 36
+    
+    comando = '''SELECT * FROM Hospital'''
+    hospitais = pega_info_db(comando)
+    
+    if len(hospitais) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, hospital in enumerate(hospitais):
+                print(f'{i + 1} - {hospital[1]}')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(hospitais))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                cnpj_hospital = hospitais[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT e.coren, e.nome FROM Enfermeira e JOIN Hospital_x_Enfermeira h_e ON e.coren = h_e.coren WHERE h_e.cnpj = :cnpj;'''
+            enfermeiras = pega_info_db(comando, {"cnpj": cnpj_hospital})
+            
+            if enfermeiras != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for enfermeira in enfermeiras:
+                    print(f'Nome: {enfermeira[1]}')
+                    print(f'COREN: {enfermeira[0]}')
+                    imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Enfermeiras Cadastradas neste Hospital!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Hospitais Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 

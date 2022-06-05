@@ -22,7 +22,7 @@ def main():
         elif opcao == 2:
             crud_medico()
         elif opcao == 3:
-            crud_enfermeiro()
+            crud_enfermeira()
         elif opcao == 4:
             crud_paciente()
         elif opcao == 0:

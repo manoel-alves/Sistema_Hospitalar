@@ -2,7 +2,7 @@ from utils.geral import *
 from utils.obtencoes import obter_opcao
 from cruds.hospital import insere_hospital, altera_hospital, menu_relatorios_hospital, exclui_hospital
 from cruds.medico import insere_medico, altera_medico, menu_relatorios_medico, exclui_medico
-from cruds.enfermeiro import insere_enfermeiro, altera_enfermeiro, menu_relatorios_enfermeiro, exclui_enfermeiro
+from cruds.enfermeira import insere_enfermeira, altera_enfermeira, menu_relatorios_enfermeira, exclui_enfermeira
 from cruds.paciente import insere_paciente, altera_paciente, menu_relatorios_paciente, exclui_paciente
 
 def crud_hospital():
@@ -59,13 +59,13 @@ def crud_medico():
         else:
             valido = False
 
-def crud_enfermeiro():
+def crud_enfermeira():
     quant_opcoes = 4
     valido = True
     while True:
         limpa_tela()
         
-        imprime_menu_crud("Enfermeiro")
+        imprime_menu_crud("Enfermeira")
         
         if not valido:
             mensagem_input_invalido('Opcao Invalida!')
@@ -74,13 +74,13 @@ def crud_enfermeiro():
         opcao = obter_opcao(quant_opcoes)
             
         if opcao == 1:
-            insere_enfermeiro()
+            insere_enfermeira()
         elif opcao == 2:
-            altera_enfermeiro()
+            altera_enfermeira()
         elif opcao == 3:
-            menu_relatorios_enfermeiro()
+            menu_relatorios_enfermeira()
         elif opcao == 4:
-            exclui_enfermeiro()
+            exclui_enfermeira()
         elif opcao == 0:
             break
         else:

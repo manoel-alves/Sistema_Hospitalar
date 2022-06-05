@@ -16,7 +16,7 @@ class Medico():
     def __init__(self):
         pass
 
-class Enfermeiro():
+class Enfermeira():
     def __init__(self):
         pass    
     

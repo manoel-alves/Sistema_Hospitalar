@@ -169,17 +169,17 @@ def obter_telefone(titulo:str):
         else:
             return False
 
-def obter_endereco():
-    rua = obter_rua()
+def obter_endereco(titulo:str):
+    rua = obter_rua(titulo)
     if not rua: return False
     
-    bairro = obter_bairro()
+    bairro = obter_bairro(titulo)
     if not bairro: return False
           
-    cidade = obter_cidade()
+    cidade = obter_cidade(titulo)
     if not cidade: return False
         
-    cep = obter_cep()
+    cep = obter_cep(titulo)
     if not cep: return False
     
     return Endereco(rua, bairro, cidade, cep)
