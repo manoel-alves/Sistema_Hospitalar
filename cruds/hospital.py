@@ -127,7 +127,8 @@ def lista_hospitais():
         mensagem_query_vazia(titulo, mensagem)
         
 def lista_Medicos_Hospital():
-    titulo = 'MEDICOS X HOSPITAL'
+    titulo = 'HOSPITAL X MEDICO'
+    tam_linha = 36
     
     comando = '''SELECT * FROM Hospital'''
     hospitais = pega_info_db(comando)
@@ -137,12 +138,12 @@ def lista_Medicos_Hospital():
         while True:
             limpa_tela()
             
-            imprime_titulo(titulo)
+            imprime_titulo(titulo, tam_linha)
             for i, hospital in enumerate(hospitais):
                 print(f'{i + 1} - {hospital[1]}')
-            imprime_linha()
+            imprime_linha(tam_linha)
             print('0 - Voltar')
-            imprime_linha()
+            imprime_linha(tam_linha)
             
             if not valido:
                 mensagem_input_invalido('Opcao Invalida!')
@@ -156,21 +157,16 @@ def lista_Medicos_Hospital():
                 break
         
         if opcao != 0:
-            
-            # >>>>>>>>> Bug <<<<<<<<< (não retorna nenhum registro, mesmo existindo)
-            comando = '''SELECT Medico.crm, Medico.nome FROM Medico JOIN Hospital_x_Medico as h_m ON Medico.crm = h_m.crm WHERE h_m.cnpj = :cnpj;'''
+            comando = '''SELECT Medico.crm, Medico.nome FROM Medico JOIN Hospital_x_Medico h_m ON Medico.crm = h_m.crm WHERE h_m.cnpj = :cnpj;'''
             medicos = pega_info_db(comando, {"cnpj": hospitais[opcao - 1][0]})
-            
-            print(medicos)
-            pausa()
             
             if medicos != []:
                 limpa_tela()
-                imprime_titulo(titulo)
+                imprime_titulo(titulo, tam_linha)
                 for medico in medicos:
                     print(f'Nome: {medico[1]}')
                     print(f'CRM: {medico[0]}')
-                    imprime_linha()
+                    imprime_linha(tam_linha)
                 pausa()
             else:
                 mensagem = 'Ainda não há Medicos Cadastrados neste Hospital!'
@@ -211,6 +207,9 @@ def altera_hospital():
             
             opcao = obter_opcao(qnt_hospitais)
             
+            if opcao == 0:
+                break
+            
             if opcao == -1:
                 valido = False
             else:
@@ -223,100 +222,101 @@ def altera_hospital():
                 telefone_hospital = hospitais[opcao - 1][6]
                 break
         
-        tipo_dado = ''
-        dado = ''
-        while True: # obtem dado
-            limpa_tela()
-            
-            imprime_titulo(titulo)
-            print('Qual dado deseja alterar?')
-            imprime_linha()
-            print(f'1 - Nome ({nome_hospital})')
-            print('2 - Endereco')
-            print(f'3 - Telefone ({telefone_hospital})')
-            imprime_linha()
-            print('0 - Voltar')
-            imprime_linha()
-            
-            if not valido:
-                mensagem_input_invalido('Opcao Invalida!')
-                valido = True
-            
-            opcao = obter_opcao(3)
-            
-            if opcao == -1:
-                valido = False
-            else:
-                if opcao == 1:
-                    tipo_dado = 'nome'
-                    dado = obter_nome()
-                    break
-                elif opcao == 2:
+        if opcao != 0:
+            tipo_dado = ''
+            dado = ''
+            while True: # obtem dado
+                limpa_tela()
+                
+                imprime_titulo(titulo)
+                print('Qual dado deseja alterar?')
+                imprime_linha()
+                print(f'1 - Nome ({nome_hospital})')
+                print('2 - Endereco')
+                print(f'3 - Telefone ({telefone_hospital})')
+                imprime_linha()
+                print('0 - Voltar')
+                imprime_linha()
+                
+                if not valido:
+                    mensagem_input_invalido('Opcao Invalida!')
                     valido = True
-                    while True:
-                        limpa_tela()
-                        
-                        imprime_titulo(titulo)
-                        print('Qual dado do Endereco?')
-                        imprime_linha()
-                        print(f'1 - Rua ({rua_hospital})')
-                        print(f'2 - Bairro ({bairro_hospital})')
-                        print(f'3 - Cidade ({cidade_hospital})')
-                        print(f'4 - CEP ({cep_hospital})')
-                        imprime_linha()
-                        print('0 - Voltar')
-                        imprime_linha()
-                        
-                        if not valido:
-                            mensagem_input_invalido('Opcao Invalida!')
-                            valido = True
-                        
-                        opcao = obter_opcao(4)
-                        
-                        if opcao == -1:
-                            valido = False
-                        else:
-                            if opcao == 1:
-                                tipo_dado = 'rua'
-                                dado = obter_rua(titulo)
-                                break
-                            elif opcao == 2:
-                                tipo_dado = 'bairro'
-                                dado = obter_bairro(titulo)
-                                break
-                            elif opcao == 3:
-                                tipo_dado = 'cidade'
-                                dado = obter_cidade(titulo)
-                                break
-                            elif opcao == 4:
-                                tipo_dado = 'cep'
-                                dado = obter_cep(titulo)
-                                break
-                            elif opcao == 0:
-                                break
-                            else:
-                                valido = False
-                    
-                    
-                    break
-                elif opcao == 3:
-                    tipo_dado = 'telefone'
-                    dado = obter_telefone()
-                    break
-                elif opcao == 0:
-                    break
-                else:
+                
+                opcao = obter_opcao(3)
+                
+                if opcao == -1:
                     valido = False
-        
-        if dado != 0 and opcao != 0:
-            comando = '''UPDATE Hospital SET {coluna} = :dado WHERE cnpj = :cnpj'''.format(coluna=tipo_dado)
-            dados = {'cnpj': chave_hospital, 'dado': dado}
+                else:
+                    if opcao == 1:
+                        tipo_dado = 'nome'
+                        dado = obter_nome()
+                        break
+                    elif opcao == 2:
+                        valido = True
+                        while True:
+                            limpa_tela()
+                            
+                            imprime_titulo(titulo)
+                            print('Qual dado do Endereco?')
+                            imprime_linha()
+                            print(f'1 - Rua ({rua_hospital})')
+                            print(f'2 - Bairro ({bairro_hospital})')
+                            print(f'3 - Cidade ({cidade_hospital})')
+                            print(f'4 - CEP ({cep_hospital})')
+                            imprime_linha()
+                            print('0 - Voltar')
+                            imprime_linha()
+                            
+                            if not valido:
+                                mensagem_input_invalido('Opcao Invalida!')
+                                valido = True
+                            
+                            opcao = obter_opcao(4)
+                            
+                            if opcao == -1:
+                                valido = False
+                            else:
+                                if opcao == 1:
+                                    tipo_dado = 'rua'
+                                    dado = obter_rua(titulo)
+                                    break
+                                elif opcao == 2:
+                                    tipo_dado = 'bairro'
+                                    dado = obter_bairro(titulo)
+                                    break
+                                elif opcao == 3:
+                                    tipo_dado = 'cidade'
+                                    dado = obter_cidade(titulo)
+                                    break
+                                elif opcao == 4:
+                                    tipo_dado = 'cep'
+                                    dado = obter_cep(titulo)
+                                    break
+                                elif opcao == 0:
+                                    break
+                                else:
+                                    valido = False
+                        
+                        
+                        break
+                    elif opcao == 3:
+                        tipo_dado = 'telefone'
+                        dado = obter_telefone()
+                        break
+                    elif opcao == 0:
+                        break
+                    else:
+                        valido = False
             
-            atualizado = altera_db(comando, dados)
-            if atualizado:
-                mensagem_sucesso('Hospital', 'Alterado')
-            else:
-                mensagem_erro('Hospital', 'Alterar')
+            if dado != 0 and opcao != 0:
+                comando = '''UPDATE Hospital SET {coluna} = :dado WHERE cnpj = :cnpj'''.format(coluna=tipo_dado)
+                dados = {'cnpj': chave_hospital, 'dado': dado}
+                
+                atualizado = altera_db(comando, dados)
+                if atualizado:
+                    mensagem_sucesso('Hospital', 'Alterado')
+                else:
+                    mensagem_erro('Hospital', 'Alterar')
     else:
         mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
