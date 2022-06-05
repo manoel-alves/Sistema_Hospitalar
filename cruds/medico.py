@@ -149,7 +149,152 @@ def associa_medico_hospital():
 #------------------------------------------------------
 
 def altera_medico():
-    pass
+    titulo = 'ALTERA MEDICO'
+    
+    comando = '''SELECT * FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    qnt_medicos = len(medicos)
+    
+    if qnt_medicos != 0:
+        valido = True
+        crm_medico = ''
+        while True: # obtem medico
+            limpa_tela()
+            
+            imprime_titulo(titulo)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[2]}')
+            imprime_linha()
+            print('0 - Voltar')
+            imprime_linha()
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_medicos)
+            
+            if opcao == 0:
+                break
+            
+            if opcao == -1:
+                valido = False
+            else:
+                crm_medico = medicos[opcao - 1][0]
+                cpf_medico = medicos[opcao - 1][1]
+                nome_medico = medicos[opcao - 1][2]
+                rua_medico = medicos[opcao - 1][3]
+                bairro_medico = medicos[opcao - 1][4]
+                cidade_medico = medicos[opcao - 1][5]
+                cep_medico = medicos[opcao - 1][6]
+                especialidade_id = medicos[opcao - 1][7]
+                comando = '''SELECT titulo FROM Especialidade WHERE id_Especialidade = :id'''
+                especialidade_nome = pega_info_db(comando, {'id':especialidade_id})[0][0]
+                break
+        
+        if opcao != 0:
+            tipo_dado = ''
+            dado = ''
+            while True: # obtem dado
+                limpa_tela()
+                
+                imprime_titulo(titulo)
+                print('Qual dado deseja alterar?')
+                imprime_linha()
+                print(f'1 - Nome ({nome_medico})')
+                print(f'2 - CPF ({cpf_medico})')
+                print('3 - Endereco')
+                print(f'4 - Especialidade ({especialidade_nome})')
+                imprime_linha()
+                print('0 - Voltar')
+                imprime_linha()
+                
+                if not valido:
+                    mensagem_input_invalido('Opcao Invalida!')
+                    valido = True
+                
+                opcao = obter_opcao(4)
+                
+                if opcao == -1:
+                    valido = False
+                else:
+                    if opcao == 1:
+                        tipo_dado = 'nome'
+                        dado = obter_nome(titulo)
+                        break
+                    elif opcao == 2:
+                        tipo_dado = 'cpf'
+                        dado = obter_cpf(titulo)
+                        break
+                    elif opcao == 3:
+                        valido = True
+                        while True:
+                            limpa_tela()
+                            
+                            imprime_titulo(titulo)
+                            print('Qual dado do Endereco?')
+                            imprime_linha()
+                            print(f'1 - Rua ({rua_medico})')
+                            print(f'2 - Bairro ({bairro_medico})')
+                            print(f'3 - Cidade ({cidade_medico})')
+                            print(f'4 - CEP ({cep_medico})')
+                            imprime_linha()
+                            print('0 - Voltar')
+                            imprime_linha()
+                            
+                            if not valido:
+                                mensagem_input_invalido('Opcao Invalida!')
+                                valido = True
+                            
+                            opcao = obter_opcao(4)
+                            
+                            if opcao == -1:
+                                valido = False
+                            else:
+                                if opcao == 1:
+                                    tipo_dado = 'rua'
+                                    dado = obter_rua(titulo)
+                                    break
+                                elif opcao == 2:
+                                    tipo_dado = 'bairro'
+                                    dado = obter_bairro(titulo)
+                                    break
+                                elif opcao == 3:
+                                    tipo_dado = 'cidade'
+                                    dado = obter_cidade(titulo)
+                                    break
+                                elif opcao == 4:
+                                    tipo_dado = 'cep'
+                                    dado = obter_cep(titulo)
+                                    break
+                                elif opcao == 0:
+                                    break
+                                else:
+                                    valido = False
+                        
+                        break
+                    elif opcao == 4:
+                        tipo_dado = 'fk_especialidade'
+                        dado = obter_especialidade(titulo)
+                        break
+                    elif opcao == 0:
+                        break
+                    else:
+                        valido = False
+            
+            if dado != 0 and opcao != 0:
+                comando = '''UPDATE Medico SET {coluna} = :dado WHERE crm = :crm'''.format(coluna=tipo_dado)
+                dados = {'crm': crm_medico, 'dado': dado}
+                    
+                atualizado = altera_db(comando, dados)
+                if atualizado:
+                    mensagem_sucesso(titulo, 'Medico', 'Alterado')
+                else:
+                    mensagem_erro(titulo, 'Medico', 'Alterar')
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
