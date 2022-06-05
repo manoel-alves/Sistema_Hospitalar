@@ -182,7 +182,54 @@ def associa_medico_hospital():
         mensagem_query_vazia(titulo, mensagem)
 
 def Adiciona_Telefone(): 
-    pass
+    titulo = 'ADICIONAR TELEFONE'
+    tam_linha = 36
+    
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    qnt_medicos = len(medicos)
+    
+    if qnt_medicos != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            print('Qual Medico?')
+            imprime_linha(tam_linha)
+            for i, medico in enumerate(medicos):
+                print(f'{i + 1} - {medico[1]}')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+
+            opcao = obter_opcao(qnt_medicos)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                crm_medico = medicos[opcao - 1][0]
+                break
+        
+        telefone = obter_telefone(titulo)
+        if not telefone: return None
+        
+        if opcao != 0:
+            comando = '''INSERT INTO Telefone (numero, crm) VALUES (:numero, :crm)'''
+            adiciona = altera_db(comando, {'numero':telefone,'crm':crm_medico})
+            
+            if adiciona:
+                mensagem_sucesso(titulo, 'Telefone', 'Adicionado')
+            else:
+                mensagem_erro(titulo, 'Telefone', 'Adicionar')
+    else:
+        mensagem = 'Ainda não há Medicos Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
@@ -197,7 +244,7 @@ def altera_medico():
     if qnt_medicos != 0:
         valido = True
         crm_medico = ''
-        while True: # obtem medico
+        while True:
             limpa_tela()
             
             imprime_titulo(titulo)
@@ -597,9 +644,9 @@ def lista_telefones_medico():
             if telefones != []:
                 limpa_tela()
                 imprime_titulo(titulo, tam_linha)
+                print(f'Telefones de {medico[1]}:')
+                imprime_linha(tam_linha)
                 for telefone in telefones:
-                    print(f'Telefones de {medico[1]}:')
-                    imprime_linha(tam_linha)
                     print(f'-> {telefone[0]}')
                 imprime_linha(tam_linha)
                 pausa()
