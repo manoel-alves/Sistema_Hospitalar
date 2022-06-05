@@ -4,6 +4,34 @@ from utils.geral import *
 from utils.obtencoes import *
 from utils.validacoes import *
 
+def menu_insercao_paciente():
+    quant_opcoes = 2
+    qnt_linhas = 36
+    valido = True
+    while True:
+        limpa_tela()
+        
+        imprime_titulo('INSERCAO PACIENTE', qnt_linhas)
+        print('1 - Inserir Paciente')
+        print('2 - Adicionar Tratamento')
+        imprime_linha(qnt_linhas)
+        print('0 - Voltar')
+        imprime_linha(qnt_linhas)
+        
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!', qnt_linhas)
+           
+        opcao = obter_opcao(quant_opcoes)
+            
+        if opcao == 1:
+            insere_paciente()
+        elif opcao == 2:
+            adiciona_tratamento()
+        elif opcao == 0:
+            break
+        else:
+            valido = False
+
 def insere_paciente():
     titulo = 'INSERIR Paciente'
     

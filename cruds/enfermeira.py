@@ -4,6 +4,37 @@ from utils.geral import *
 from utils.obtencoes import *
 from utils.validacoes import *
 
+def menu_insercao_enfermeira():
+    quant_opcoes = 3
+    qnt_linhas = 36
+    valido = True
+    while True:
+        limpa_tela()
+        
+        imprime_titulo('INSERCAO ENFERMEIRA', qnt_linhas)
+        print('1 - Inserir Enfermeira')
+        print('2 - Adicionar Hospital (Trabalho)')
+        print('3 - Adicionar Medico (Auxilia)')
+        imprime_linha(qnt_linhas)
+        print('0 - Voltar')
+        imprime_linha(qnt_linhas)
+        
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!', qnt_linhas)
+           
+        opcao = obter_opcao(quant_opcoes)
+            
+        if opcao == 1:
+            insere_enfermeira()
+        elif opcao == 2:
+            associa_enfermeira_hospital()
+        elif opcao == 3:
+            associa_enfermeira_medico()
+        elif opcao == 0:
+            break
+        else:
+            valido = False
+
 def insere_enfermeira():
     titulo = 'INSERIR ENFERMEIRA'
     
@@ -71,10 +102,10 @@ def confirma_dados(titulo:str, enfermeira:Enfermeira):
         else:
             valido = False
 
-def associa_enfermeira_medico():
+def associa_enfermeira_hospital():
     pass
 
-def associa_enfermeira_hospital():
+def associa_enfermeira_medico():
     pass
 
 #------------------------------------------------------
