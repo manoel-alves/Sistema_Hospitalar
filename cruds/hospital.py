@@ -296,7 +296,7 @@ def altera_hospital():
                 else:
                     if opcao == 1:
                         tipo_dado = 'nome'
-                        dado = obter_nome()
+                        dado = obter_nome(titulo)
                         break
                     elif opcao == 2:
                         valido = True
@@ -348,7 +348,7 @@ def altera_hospital():
                         break
                     elif opcao == 3:
                         tipo_dado = 'telefone'
-                        dado = obter_telefone()
+                        dado = obter_telefone(titulo)
                         break
                     elif opcao == 0:
                         break
@@ -361,9 +361,9 @@ def altera_hospital():
                 
                 atualizado = altera_db(comando, dados)
                 if atualizado:
-                    mensagem_sucesso('Hospital', 'Alterado')
+                    mensagem_sucesso(titulo, 'Hospital', 'Alterado')
                 else:
-                    mensagem_erro('Hospital', 'Alterar')
+                    mensagem_erro(titulo, 'Hospital', 'Alterar')
     else:
         mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
@@ -394,12 +394,12 @@ def exclui_hospital():
                 mensagem_input_invalido('Opcao Invalida!')
                 valido = True
             
-            opcao = obter_opcao(qnt_hospitais) - 1
+            opcao = obter_opcao(qnt_hospitais)
             
             if opcao == -1:
                 valido = False
             else:
-                cnpj_hospital = hospitais[opcao][0]
+                cnpj_hospital = hospitais[opcao - 1][0]
                 break
         
         if opcao != 0:
@@ -407,9 +407,9 @@ def exclui_hospital():
             excluido = altera_db(comando, {'cnpj':cnpj_hospital})
             
             if excluido:
-                mensagem_sucesso('Hospital', 'Excluido')
+                mensagem_sucesso(titulo, 'Hospital', 'Excluido')
             else:
-                mensagem_erro('Hospital', 'Excluir')
+                mensagem_erro(titulo, 'Hospital', 'Excluir')
     else:
         mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
