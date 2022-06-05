@@ -317,6 +317,9 @@ def lista_medicos_enfermeira():
 
 #------------------------------------------------------
 
+def exclui_dependencias():
+    pass
+
 def exclui_enfermeira():
     titulo = 'EXCLUIR ENFERMEIRA'
     
@@ -363,8 +366,5 @@ def exclui_enfermeira():
     else:
         mensagem = 'Ainda não há Enfermeira Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
-
-def exclui_dependencias():
-    pass
 
 #------------------------------------------------------

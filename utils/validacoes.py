@@ -1,3 +1,4 @@
+from datetime import date
 from utils.db_operacoes import pega_info_db
 
 def valida_nome(nome:str):
@@ -139,6 +140,37 @@ def valida_uf(uf:str):
                'SE', 'TO', 'DF']
     
     return uf.upper() in estados
+
+def valida_data(data:str):
+    # dd/mm/aaaa
+    if len(data) != 10:
+        return False
+    
+    for i in range(len(data)):
+        if i not in [2, 5]:
+            if not data[i].isdigit():
+                return False
+        else:
+            if data[i] != '/':
+                return False
+    
+    try:
+        dia = int(f'{data[0]}{data[1]}')
+        mes = int(f'{data[3]}{data[4]}')
+        ano = int(f'{data[6]}{data[7]}{data[8]}{data[9]}')
+    except ValueError:
+        return False
+
+    ano_atual = date.today().year
+    if ano > ano_atual:
+        return False
+
+    try:
+        date(ano, mes, dia)
+    except ValueError:
+        return False            
+    
+    return True
 
 def dado_ja_cadastrado(tabela:str, nome_dado:str, dado):
     comando = f'SELECT {nome_dado} FROM {tabela}'

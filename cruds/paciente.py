@@ -1,5 +1,5 @@
 from utils.db_operacoes import altera_db, pega_info_db
-from classes import Endereco, Paciente
+from classes import Endereco, Paciente, Tratamento
 from utils.geral import *
 from utils.obtencoes import *
 from utils.validacoes import *
@@ -100,7 +100,58 @@ def confirma_dados(titulo:str, paciente:Paciente):
             valido = False
 
 def adiciona_tratamento():
-    pass
+    titulo = 'ADICIONAR TRATAMENTO'
+    tam_linha = 36
+    
+    comando = '''SELECT cpf, nome FROM Paciente'''
+    pacientes = pega_info_db(comando)
+    
+    qnt_pacientes = len(pacientes)
+    
+    if qnt_pacientes != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            print('Qual Paciente?')
+            imprime_linha(tam_linha)
+            for i, paciente in enumerate(pacientes):
+                print(f'{i + 1} - {paciente[1]} ({paciente[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+
+            opcao = obter_opcao(qnt_pacientes)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                cpf_paciente = pacientes[opcao - 1][0]
+                break
+        
+        tratamento = obter_tratamento(titulo, cpf_paciente)
+        if not tratamento: return None
+        
+        if opcao != 0:
+            comando = '''INSERT INTO Tratamento (fk_cpf, fk_crm, cid, data) VALUES (:cpf, :crm, :cid, :data)'''
+            dados = {'cpf': tratamento.cpf,'crm': tratamento.crm, 'cid': tratamento.cid, 'data': tratamento.data}
+            adiciona = altera_db(comando, dados)
+            
+            comando = '''INSERT INTO Medico_x_Paciente (crm, cpf) VALUES (:crm, :cpf)'''
+            altera_db(comando, {'crm': tratamento.crm, 'cpf': tratamento.cpf})
+            
+            if adiciona:
+                mensagem_sucesso(titulo, 'Tratamento', 'Adicionado')
+            else:
+                mensagem_erro(titulo, 'Tratamento', 'Adicionar')
+    else:
+        mensagem = 'Ainda não há Pacientes Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
@@ -316,6 +367,9 @@ def lista_medicos_paciente():
 
 #------------------------------------------------------
 
+def exclui_dependencias():
+    pass
+
 def exclui_paciente():
     titulo = 'EXCLUIR PACIENTE'
     
@@ -362,8 +416,5 @@ def exclui_paciente():
     else:
         mensagem = 'Ainda não há Pacientes Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
-
-def exclui_dependencias():
-    pass
 
 #------------------------------------------------------

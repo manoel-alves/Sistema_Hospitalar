@@ -1,5 +1,5 @@
 from utils.db_operacoes import altera_db, pega_info_db
-from classes import Endereco
+from classes import Endereco, Tratamento
 from utils.geral import *
 from utils.validacoes import *
 
@@ -387,3 +387,88 @@ def obter_endereco(titulo_op:str):
     if not cep: return False
     
     return Endereco(rua, bairro, cidade, cep)
+
+def obter_data(titulo:str):
+    tam_linha = 43
+    
+    valido = True
+    while True:
+        limpa_tela()
+        
+        titulo_obtencao(titulo, tam_linha)
+        if not valido:
+            mensagem_input_invalido('Data Invalida!', tam_linha)
+            valido = True
+            
+        data = input('Insira a Data do Atendimento (dd/mm/aaaa): ').strip()
+        
+        if data != '0':
+            if valida_data(data.strip()):
+                return data
+            else:
+                valido = False        
+        else:
+            return False
+
+def obter_cid(titulo:str):
+    valido = True
+    while True:
+        limpa_tela()
+        
+        titulo_obtencao(titulo)
+        if not valido:
+            mensagem_input_invalido('CID Inválido!')
+            valido = True
+            
+        cid = input('Insira o CID ([A...Z]XX): ').strip()
+        
+        if cid != '0':
+            if valida_cid(cid):
+                return cid
+            else:
+                valido = False        
+        else:
+            return False
+
+def obter_tratamento(titulo:str, cpf_paciente:str):
+    comando = '''SELECT crm, nome FROM Medico'''
+    medicos = pega_info_db(comando)
+    
+    qnt_medicos = len(medicos)
+    
+    valido = True
+    while True:
+        limpa_tela()
+        
+        imprime_titulo(titulo, 36)
+        print('Qual Medico Atendeu?')
+        imprime_linha(36)
+        for i, medico in enumerate(medicos):
+            print(f'{i + 1} - {medico[1]} ({medico[0]})')
+        imprime_linha(36)
+        print('0 - Cancelar')
+        imprime_linha(36)
+        
+        if not valido:
+            mensagem_input_invalido('Opcao Invalida!', 36)
+            valido = True
+        opcao = obter_opcao(qnt_medicos)
+        
+        if opcao == 0:
+            return False
+        else:
+            if opcao != -1:
+                crm_medico = medicos[opcao - 1][0]
+                break 
+            else:
+                valido = False
+    
+    cid = obter_cid(titulo)
+    if not cid: return False
+    
+    data = obter_data(titulo)
+    if not data: return False
+    
+    tratamento = Tratamento(cpf_paciente, crm_medico, cid, data)
+    
+    return tratamento

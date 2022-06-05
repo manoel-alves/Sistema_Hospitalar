@@ -608,6 +608,7 @@ def lista_pacientes_medico():
             if opcao == -1:
                 valido = False
             else:
+                medico_nome = medicos[opcao - 1][1]
                 medico_crm = medicos[opcao - 1][0]
                 break
         
@@ -619,12 +620,15 @@ def lista_pacientes_medico():
                 limpa_tela()
                 imprime_titulo(titulo, tam_linha)
                 for paciente in pacientes:
-                    comando = '''SELECT t.cid, t.data FROM Tratamento t JOIN Paciente p ON t.cpf = :cpf WHERE t.crm = :crm;'''
+                    comando = '''SELECT t.cid, t.data FROM Tratamento t JOIN Paciente p ON t.fk_cpf = :cpf WHERE t.fk_crm = :crm;'''
                     tratamentos = pega_info_db(comando, {"cpf": paciente[0], 'crm': medico_crm})
                     
+                    print(f'Medico: {medico_nome} ({medico_crm})')
                     print(f'Paciente: {paciente[1]} ({paciente[0]})')
+                    imprime_linha(tam_linha)
                     print('Tratamentos:')
                     for tratamento in tratamentos:
+                        print(f'            ----------------')
                         print(f'            CID: {tratamento[0]}')
                         print(f'            Data: {tratamento[1]}')
                         print(f'            ----------------')
@@ -690,6 +694,9 @@ def lista_telefones_medico():
 
 #------------------------------------------------------
 
+def exclui_dependencias():
+    pass
+
 def exclui_medico():
     titulo = 'EXCLUIR MEDICO'
     
@@ -736,6 +743,3 @@ def exclui_medico():
     else:
         mensagem = 'Ainda não há Medicos Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
-        
-def exclui_dependencias():
-    pass

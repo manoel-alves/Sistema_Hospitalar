@@ -35,5 +35,8 @@ class Paciente():
         self.endereco = endereco
 
 class Tratamento():
-    def __init__(self):
-        pass
+    def __init__(self, cpf:str, crm:str, cid:str, data:str):
+        self.cpf = cpf
+        self.crm = crm
+        self.cid = cid
+        self.data = data
