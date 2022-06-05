@@ -33,6 +33,7 @@ def mensagem_erro(titulo:str, entidade:str, operacao:str):
     
     imprime_titulo(titulo, 36)
     print(f'Não foi possível {operacao} o {entidade}!')
+    imprime_linha(36)
     
     pausa()
 
@@ -41,6 +42,7 @@ def mensagem_sucesso(titulo:str, entidade:str, operacao:str):
     
     imprime_titulo(titulo, 36)
     print(f'{entidade} {operacao} com Sucesso!')
+    imprime_linha(36)
     
     pausa()
     

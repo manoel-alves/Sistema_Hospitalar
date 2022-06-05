@@ -78,11 +78,10 @@ def valida_crm(crm:str):
     for i in range(len(crm)):
         if i < 4 and not crm[i].isdigit():
             return False
-        elif i == 4 and crm[i] != '/':
+        if i == 4 and crm[i] != '/':
             return False
-        else:
-            if not crm[i].isalpha():
-                return False
+        if i > 4 and not crm[i].isalpha():
+            return False
         
     if not valida_uf(f'{crm[5]}{crm[6]}'):
         return False
@@ -137,18 +136,15 @@ def valida_uf(uf:str):
                'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 
                'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 
                'SE', 'TO', 'DF']
-    if len(uf) != 2:
-        return False
     
     return uf.upper() in estados
 
 def dado_ja_cadastrado(tabela:str, nome_dado:str, dado):
     comando = f'SELECT {nome_dado} FROM {tabela}'
-    
     registros = pega_info_db(comando)
     
     cadastrados = []
     for registro in registros:
-        cadastrados.append(registro[0])
-        
+        cadastrados.append(registro[0])  
+    
     return True if dado in cadastrados else False

@@ -13,8 +13,12 @@ class Hospital():
         self.telefone = telefone
 
 class Medico():
-    def __init__(self):
-        pass
+    def __init__(self, crm:str, cpf:str, nome:str, endereco:Endereco, especialidade:list):
+        self.crm = crm
+        self.cpf = cpf
+        self.nome = nome
+        self.endereco = endereco
+        self.especialidade = especialidade
 
 class Enfermeira():
     def __init__(self):
