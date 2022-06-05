@@ -28,8 +28,11 @@ class Enfermeira():
         self.endereco = endereco  
     
 class Paciente():
-    def __init__(self):
-        pass
+    def __init__(self, cpf:str, rg:str, nome:str, endereco:Endereco):
+        self.cpf = cpf
+        self.rg = rg
+        self.nome = nome
+        self.endereco = endereco
 
 class Tratamento():
     def __init__(self):

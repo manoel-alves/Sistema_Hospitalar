@@ -97,9 +97,9 @@ def valida_rg(rg:str):
         if i not in [1, 5, 9]:
             if not rg[i].isdigit():
                 return False
-        elif i in [1, 5] and rg[i] != '.':
+        if i in [1, 5] and rg[i] != '.':
             return False
-        elif i == 9 and rg[i] != '-':
+        if i == 9 and rg[i] != '-':
             return False
     
     return True

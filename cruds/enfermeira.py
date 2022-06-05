@@ -265,8 +265,8 @@ def lista_enfermeiras():
         imprime_titulo(titulo, qnt_linhas)
         for enfermeira in Enfermeira:
             print(f'Nome: {enfermeira[2]}')
-            print(f'CRM: {enfermeira[0]}')
             print(f'CPF: {enfermeira[1]}')
+            print(f'COREN: {enfermeira[0]}')
             print('Endereco:')
             print(f'         Rua: {enfermeira[3]}')
             print(f'         Bairro: {enfermeira[4]}')

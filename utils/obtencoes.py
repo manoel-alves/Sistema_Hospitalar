@@ -230,6 +230,36 @@ def obter_cpf(titulo:str):
         else:
             return False
 
+def obter_rg(titulo:str):
+    valido = True
+    ja_cadastrado = False
+    while True:
+        limpa_tela()
+        
+        titulo_obtencao(titulo, tam=36)
+        
+        if not valido:
+            mensagem_input_invalido('RG Inválido!', 36)
+            valido = True
+        if ja_cadastrado:
+            mensagem_input_invalido('RG Ja Cadastrado!', 36)
+            ja_cadastrado = False
+            
+        rg = input('Insira o RG (x.xxx.xxx-x): ').strip()
+        
+        if rg != '0':
+            if valida_rg(rg):
+                
+                if dado_ja_cadastrado('Paciente', 'rg', rg):
+                    ja_cadastrado = True
+                
+                if not ja_cadastrado:
+                    return rg
+            else:
+                valido = False
+        else:
+            return False
+
 def obter_especialidade(titulo:str):
     valido = True
     checar = True
