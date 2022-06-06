@@ -142,8 +142,14 @@ def adiciona_tratamento():
             dados = {'cpf': tratamento.cpf,'crm': tratamento.crm, 'cid': tratamento.cid, 'data': tratamento.data}
             adiciona = altera_db(comando, dados)
             
-            comando = '''INSERT INTO Medico_x_Paciente (crm, cpf) VALUES (:crm, :cpf)'''
-            altera_db(comando, {'crm': tratamento.crm, 'cpf': tratamento.cpf})
+            comando = '''SELECT crm FROM Medico_x_Paciente WHERE cpf = :cpf AND crm = :crm'''
+            associacao = pega_info_db(comando, {'cpf':cpf_paciente, 'crm':tratamento.crm})
+            
+            
+            ja_associado = len(associacao)
+            if not ja_associado:
+                comando = '''INSERT INTO Medico_x_Paciente (crm, cpf) VALUES (:crm, :cpf)'''
+                altera_db(comando, {'crm': tratamento.crm, 'cpf': tratamento.cpf})
             
             if adiciona:
                 mensagem_sucesso(titulo, 'Tratamento', 'Adicionado')
@@ -360,10 +366,121 @@ def lista_pacientes():
         mensagem_query_vazia(titulo, mensagem)
 
 def lista_tratamentos():
-    pass
+    titulo = 'TRATAMENTOS DO PACIENTE'
+    tam_linha = 37
+    
+    comando = '''SELECT cpf, nome FROM Paciente'''
+    pacientes = pega_info_db(comando)
+    
+    qnt_pacientes = len(pacientes)
+    
+    if qnt_pacientes != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, paciente in enumerate(pacientes):
+                print(f'{i + 1} - {paciente[1]} ({paciente[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_pacientes)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                paciente_cpf = pacientes[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT fk_crm, cid, data FROM Tratamento t WHERE t.fk_cpf = :cpf;'''
+            tratamentos = pega_info_db(comando, {"cpf": paciente_cpf})
+            
+            if tratamentos != []:
+                limpa_tela()
+                
+                imprime_titulo(titulo, tam_linha)
+                print(f'Tratamentos de {paciente[1]}:')
+                imprime_linha(tam_linha)
+                for tratamento in tratamentos:
+                    comando = '''SELECT crm, nome FROM Medico WHERE crm = :crm'''
+                    medico = pega_info_db(comando, {'crm': tratamento[0]})[0]
+                    print(f'Medico: {medico[1]} ({medico[0]})')
+                    print(f'CID: {tratamento[1]}')
+                    print(f'Data: {tratamento[2]}')
+                    imprime_linha(tam_linha)
+                
+                pausa()
+            else:
+                mensagem = 'Ainda não há Tratamentos Cadastrados para este Paciente!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Pacientes Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_medicos_paciente():
-    pass
+    titulo = 'MEDICOS DO PACIENTE'
+    tam_linha = 37
+    
+    comando = '''SELECT cpf, nome FROM Paciente'''
+    pacientes = pega_info_db(comando)
+    
+    qnt_pacientes = len(pacientes)
+    
+    if qnt_pacientes != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, paciente in enumerate(pacientes):
+                print(f'{i + 1} - {paciente[1]} ({paciente[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_pacientes)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                paciente_cpf = pacientes[opcao - 1][0]
+                paciente = pacientes[opcao - 1]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT m.crm, m.nome FROM Medico m JOIN Medico_x_Paciente m_p ON m.crm = m_p.crm WHERE m_p.cpf = :cpf'''
+            medicos = pega_info_db(comando, {"cpf": paciente_cpf})
+            
+            if medicos != []:
+                limpa_tela()
+                
+                imprime_titulo(titulo, tam_linha)
+                print(f'Medicos de {paciente[1]}:')
+                imprime_linha(tam_linha)
+                for medico in medicos:
+                    comando = '''SELECT crm, nome FROM Medico WHERE crm = :crm'''
+                    medico = pega_info_db(comando, {'crm': medico[0]})[0]
+                    print(f'-> {medico[1]} ({medico[0]})')
+                imprime_linha(tam_linha)
+                
+                pausa()
+            else:
+                mensagem = 'Ainda não houve Atendimento Medico para este Paciente!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Pacientes Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 

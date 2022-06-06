@@ -151,7 +151,9 @@ def associa_medico_hospital():
             else:
                 if hospitais_associados == []:
                     comando = '''SELECT h.cnpj FROM Hospital h JOIN Hospital_x_Medico h_m ON h.cnpj = h_m.cnpj WHERE h_m.crm = :crm'''
-                    hospitais_associados = pega_info_db(comando, {'crm': medico[0]})[0]
+                    hospitais_associados = pega_info_db(comando, {'crm': medico[0]})
+                    if len(hospitais_associados) != 0:
+                        hospitais_associados = pega_info_db(comando, {'crm': medico[0]})[0]
                 
                 if len(hospitais_associados) == qnt_hospitais:
                     mensagem = 'Medico Ja Cadastrado em Todos os Hospitais!'
@@ -193,9 +195,6 @@ def associa_medico_hospital():
                     break
         
         if opcao != 0:
-            print(crm_medico)
-            print(cnpj_hospital)
-            pausa()
             comando = '''INSERT INTO Hospital_x_Medico (cnpj, crm) VALUES (:cnpj, :crm)'''
             associa = altera_db(comando, {'cnpj':cnpj_hospital,'crm':crm_medico})
             
@@ -619,13 +618,13 @@ def lista_pacientes_medico():
             if pacientes != []:
                 limpa_tela()
                 imprime_titulo(titulo, tam_linha)
+                print(f'Medico: {medico_nome} ({medico_crm})')
+                imprime_linha(tam_linha)
                 for paciente in pacientes:
-                    comando = '''SELECT t.cid, t.data FROM Tratamento t JOIN Paciente p ON t.fk_cpf = :cpf WHERE t.fk_crm = :crm;'''
-                    tratamentos = pega_info_db(comando, {"cpf": paciente[0], 'crm': medico_crm})
+                    comando = '''SELECT t.cid, t.data FROM Tratamento t WHERE t.fk_crm = :crm AND t.fk_cpf = :cpf;'''
+                    tratamentos = pega_info_db(comando, {'crm': medico_crm, "cpf": paciente[0]})
                     
-                    print(f'Medico: {medico_nome} ({medico_crm})')
                     print(f'Paciente: {paciente[1]} ({paciente[0]})')
-                    imprime_linha(tam_linha)
                     print('Tratamentos:')
                     for tratamento in tratamentos:
                         print(f'            ----------------')

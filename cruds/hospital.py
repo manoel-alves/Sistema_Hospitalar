@@ -370,6 +370,9 @@ def altera_hospital():
 
 #------------------------------------------------------
 
+def exclui_dependencias():
+    pass
+
 def exclui_hospital():
     titulo = 'EXCLUIR HOSPITAL'
     
@@ -413,8 +416,5 @@ def exclui_hospital():
     else:
         mensagem = 'Ainda não há Hospitais Cadastrados!'
         mensagem_query_vazia(titulo, mensagem)
-
-def exclui_dependencias():
-    pass
    
 #------------------------------------------------------
