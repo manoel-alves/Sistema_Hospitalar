@@ -36,7 +36,7 @@ def imprime_menu_principal():
     imprime_titulo('MENU PRINCIPAL')
     print('1 - Hospitais')
     print('2 - Medicos')
-    print('3 - Enfermeiros')
+    print('3 - Enfermeiras')
     print('4 - Pacientes')
     imprime_linha()
     print('0 - Sair')

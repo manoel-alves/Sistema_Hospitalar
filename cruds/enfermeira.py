@@ -131,9 +131,10 @@ def associa_enfermeira_hospital():
             else:
                 if hospitais_associados == []:
                     comando = '''SELECT h.cnpj FROM Hospital h JOIN Hospital_x_Enfermeira h_e ON h.cnpj = h_e.cnpj WHERE h_e.coren = :coren'''
-                    hospitais_associados = pega_info_db(comando, {'coren': enfermeira[0]})
-                    if len(hospitais_associados) != 0:
-                        hospitais_associados = pega_info_db(comando, {'coren': enfermeira[0]})[0]
+                    registro = pega_info_db(comando, {'coren': coren_enfermeira})
+                    if len(registro) != 0:
+                        for hospital in registro:
+                            hospitais_associados.append(hospital[0])
                 
                 if len(hospitais_associados) == qnt_hospitais:
                     mensagem = 'Enfermeira Ja Cadastrada em Todos os Hospitais!'
@@ -149,7 +150,7 @@ def associa_enfermeira_hospital():
                             ja_cadastrado = True 
                             
                         if not ja_cadastrado:
-                            print(f'{i + 1} - {hospital[1]}')
+                            print(f'{i + 1} - {hospital[1]} {hospital[0]}')
             imprime_linha(tam_linha)
             print('0 - Voltar')
             imprime_linha(tam_linha)
@@ -219,20 +220,18 @@ def associa_enfermeira_medico():
             else:
                 if medicos_associados == []:
                     comando = '''SELECT m.crm FROM Medico m JOIN Medico_x_enfermeira m_e ON m.crm = m_e.crm WHERE m_e.coren = :coren'''
-                    medicos_associados = pega_info_db(comando, {'coren': enfermeira[0]})
-                    if len(medicos_associados) != 0:
-                        medicos_associados = pega_info_db(comando, {'coren': enfermeira[0]})[0]
-                
+                    registro = pega_info_db(comando, {'coren': coren_enfermeira})
+                    if len(registro) != 0:
+                        for medico in registro:
+                            medicos_associados.append(medico[0])
                 if len(medicos_associados) == qnt_medicos:
                     mensagem = 'Enfermeira Ja Associada a todos os Medicos!'
                     mensagem_query_vazia(titulo, mensagem)
                     return None
                 else:
-                
                     print('Qual Medico?')
                     imprime_linha(tam_linha)
                     for i, medico in enumerate(medicos):
-                        
                         ja_cadastrado = False
                         if medico[0] in medicos_associados:
                             ja_cadastrado = True 
@@ -481,15 +480,118 @@ def lista_enfermeiras():
         mensagem_query_vazia(titulo, mensagem)
 
 def lista_hospitais_enfermeira():
-    pass
+    titulo = 'ENFERMEIRA X HOSPITAIS'
+    tam_linha = 37
+    
+    comando = '''SELECT coren, nome FROM Enfermeira'''
+    enfermeiras = pega_info_db(comando)
+    
+    if len(enfermeiras) != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, enfermeira in enumerate(enfermeiras):
+                print(f'{i + 1} - {enfermeira[1]} ({enfermeira[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(len(enfermeiras))
+            
+            if opcao == -1:
+                valido = False
+            else:
+                coren = enfermeiras[opcao - 1][0]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT h.cnpj, h.nome, h.telefone FROM Hospital h JOIN Hospital_x_Enfermeira h_e ON h.cnpj = h_e.cnpj WHERE h_e.coren = :coren;'''
+            hospitais = pega_info_db(comando, {"coren": coren})
+            
+            if hospitais != []:
+                limpa_tela()
+                imprime_titulo(titulo, tam_linha)
+                for hospital in hospitais:
+                    print(f'Hospital: {hospital[1]} ({hospital[0]})')
+                    print(f'Telefone: {hospital[2]}')
+                    imprime_linha(tam_linha)
+                pausa()
+            else:
+                mensagem = 'Ainda não há Hospitais Cadastrados para esta Enfermeira!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Enfermeiras Cadastrados!'
+        mensagem_query_vazia(titulo, mensagem)
 
 def lista_medicos_enfermeira():
-    pass
+    titulo = 'MEDICOS AUXILIADOS'
+    tam_linha = 37
+    
+    comando = '''SELECT coren, nome FROM Enfermeira'''
+    enfermeiras = pega_info_db(comando)
+    
+    qnt_enfermeiras = len(enfermeiras)
+    
+    if qnt_enfermeiras != 0:
+        valido = True
+        while True:
+            limpa_tela()
+            
+            imprime_titulo(titulo, tam_linha)
+            for i, enfermeira in enumerate(enfermeiras):
+                print(f'{i + 1} - {enfermeira[1]} ({enfermeira[0]})')
+            imprime_linha(tam_linha)
+            print('0 - Voltar')
+            imprime_linha(tam_linha)
+            
+            if not valido:
+                mensagem_input_invalido('Opcao Invalida!')
+                valido = True
+            
+            opcao = obter_opcao(qnt_enfermeiras)
+            
+            if opcao == -1:
+                valido = False
+            else:
+                coren = enfermeiras[opcao - 1][0]
+                enfermeira = enfermeiras[opcao - 1]
+                break
+        
+        if opcao != 0:
+            comando = '''SELECT m.crm, m.nome FROM Medico m JOIN Medico_x_Enfermeira m_e ON m.crm = m_e.crm WHERE m_e.coren = :coren'''
+            medicos = pega_info_db(comando, {"coren": coren})
+            
+            if medicos != []:
+                limpa_tela()
+                
+                imprime_titulo(titulo, tam_linha)
+                print(f'Medicos auxiliados por {enfermeira[1]}:')
+                imprime_linha(tam_linha)
+                for medico in medicos:
+                    print(f'-> {medico[1]} ({medico[0]})')
+                imprime_linha(tam_linha)
+                
+                pausa()
+            else:
+                mensagem = 'Ainda não ha medicos auxiliados por esta Enfermeira!'
+                mensagem_query_vazia(titulo, mensagem)
+    else:
+        mensagem = 'Ainda não há Enfermeiras Cadastradas!'
+        mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------
 
-def exclui_dependencias():
-    pass
+def exclui_dependencias(coren:str):
+    comando = '''DELETE FROM Hospital_x_Enfermeira WHERE coren=:coren'''
+    altera_db(comando, {'coren':coren})
+    comando = '''DELETE FROM Medico_x_Enfermeira WHERE coren=:coren'''
+    altera_db(comando, {'coren':coren})
 
 def exclui_enfermeira():
     titulo = 'EXCLUIR ENFERMEIRA'
@@ -525,7 +627,7 @@ def exclui_enfermeira():
         
         if opcao != 0:
 
-            exclui_dependencias()
+            exclui_dependencias(coren_enfermeira)
                         
             comando = '''DELETE FROM Enfermeira WHERE coren=:coren'''
             excluido = altera_db(comando, {'coren':coren_enfermeira})
@@ -535,7 +637,7 @@ def exclui_enfermeira():
             else:
                 mensagem_erro(titulo, 'Enfermeira', 'Excluir')
     else:
-        mensagem = 'Ainda não há Enfermeira Cadastrados!'
+        mensagem = 'Ainda não há Enfermeiras Cadastradas!'
         mensagem_query_vazia(titulo, mensagem)
 
 #------------------------------------------------------

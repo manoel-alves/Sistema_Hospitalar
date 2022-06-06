@@ -151,9 +151,10 @@ def associa_medico_hospital():
             else:
                 if hospitais_associados == []:
                     comando = '''SELECT h.cnpj FROM Hospital h JOIN Hospital_x_Medico h_m ON h.cnpj = h_m.cnpj WHERE h_m.crm = :crm'''
-                    hospitais_associados = pega_info_db(comando, {'crm': medico[0]})
-                    if len(hospitais_associados) != 0:
-                        hospitais_associados = pega_info_db(comando, {'crm': medico[0]})[0]
+                    registro = pega_info_db(comando, {'crm': crm_medico})
+                    if len(registro) != 0:
+                        for hospital in registro:
+                            hospitais_associados.append(hospital[0])
                 
                 if len(hospitais_associados) == qnt_hospitais:
                     mensagem = 'Medico Ja Cadastrado em Todos os Hospitais!'
@@ -693,8 +694,19 @@ def lista_telefones_medico():
 
 #------------------------------------------------------
 
-def exclui_dependencias():
-    pass
+def exclui_dependencias(crm:str):
+    comando = '''DELETE FROM Hospital_x_Medico WHERE crm=:crm'''
+    altera_db(comando, {'crm':crm})
+    comando = '''DELETE FROM Medico_x_Enfermeira WHERE crm=:crm'''
+    altera_db(comando, {'crm':crm})
+    comando = '''DELETE FROM Hospital_x_Medico WHERE crm=:crm'''
+    altera_db(comando, {'crm':crm})
+    comando = '''DELETE FROM Tratamento WHERE fk_crm=:crm'''
+    altera_db(comando, {'crm':crm})
+    comando = '''DELETE FROM Medico_x_Paciente WHERE crm=:crm'''
+    altera_db(comando, {'crm':crm})
+    comando = '''DELETE FROM Telefone WHERE crm=:crm'''
+    altera_db(comando, {'crm':crm})
 
 def exclui_medico():
     titulo = 'EXCLUIR MEDICO'
@@ -730,7 +742,7 @@ def exclui_medico():
         
         if opcao != 0:
 
-            exclui_dependencias()
+            exclui_dependencias(crm_medico)
                         
             comando = '''DELETE FROM Medico WHERE crm=:crm'''
             excluido = altera_db(comando, {'crm':crm_medico})

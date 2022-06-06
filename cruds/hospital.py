@@ -370,8 +370,11 @@ def altera_hospital():
 
 #------------------------------------------------------
 
-def exclui_dependencias():
-    pass
+def exclui_dependencias(cnpj:str):
+    comando = '''DELETE FROM Hospital_x_Medico WHERE cnpj=:cnpj'''
+    altera_db(comando, {'cnpj':cnpj})
+    comando = '''DELETE FROM Hospital_x_Enfermeira WHERE cnpj=:cnpj'''
+    altera_db(comando, {'cnpj':cnpj})
 
 def exclui_hospital():
     titulo = 'EXCLUIR HOSPITAL'
@@ -406,6 +409,8 @@ def exclui_hospital():
                 break
         
         if opcao != 0:
+            exclui_dependencias(cnpj_hospital)
+            
             comando = '''DELETE FROM Hospital WHERE cnpj=:cnpj'''
             excluido = altera_db(comando, {'cnpj':cnpj_hospital})
             

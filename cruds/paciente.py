@@ -396,6 +396,7 @@ def lista_tratamentos():
                 valido = False
             else:
                 paciente_cpf = pacientes[opcao - 1][0]
+                paciente_nome = pacientes[opcao - 1][1]
                 break
         
         if opcao != 0:
@@ -406,7 +407,7 @@ def lista_tratamentos():
                 limpa_tela()
                 
                 imprime_titulo(titulo, tam_linha)
-                print(f'Tratamentos de {paciente[1]}:')
+                print(f'Tratamentos de {paciente_nome}:')
                 imprime_linha(tam_linha)
                 for tratamento in tratamentos:
                     comando = '''SELECT crm, nome FROM Medico WHERE crm = :crm'''
@@ -469,8 +470,6 @@ def lista_medicos_paciente():
                 print(f'Medicos de {paciente[1]}:')
                 imprime_linha(tam_linha)
                 for medico in medicos:
-                    comando = '''SELECT crm, nome FROM Medico WHERE crm = :crm'''
-                    medico = pega_info_db(comando, {'crm': medico[0]})[0]
                     print(f'-> {medico[1]} ({medico[0]})')
                 imprime_linha(tam_linha)
                 
@@ -484,8 +483,11 @@ def lista_medicos_paciente():
 
 #------------------------------------------------------
 
-def exclui_dependencias():
-    pass
+def exclui_dependencias(cpf:str):
+    comando = '''DELETE FROM Tratamento WHERE fk_cpf=:cpf'''
+    altera_db(comando, {'cpf':cpf})
+    comando = '''DELETE FROM Medico_x_Paciente WHERE cpf=:cpf'''
+    altera_db(comando, {'cpf':cpf})
 
 def exclui_paciente():
     titulo = 'EXCLUIR PACIENTE'
@@ -521,7 +523,7 @@ def exclui_paciente():
         
         if opcao != 0:
 
-            exclui_dependencias()
+            exclui_dependencias(cpf_paciente)
                         
             comando = '''DELETE FROM Paciente WHERE cpf=:cpf'''
             excluido = altera_db(comando, {'cpf':cpf_paciente})
