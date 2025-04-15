@@ -3,7 +3,7 @@ import sqlite3 as sqlite
 from utils.geral import *
 
 DB = 'database.db'
-DB_STRUCTURE = 'init_db_commands.txt'
+DB_SCHEMA = 'db_schema.sql'
 
 def inicializa_database():
     conexao = None
@@ -14,9 +14,9 @@ def inicializa_database():
         cursor = conexao.cursor()
 
         try:
-            with open(DB_STRUCTURE) as arquivo_comandos:
-                for comando in arquivo_comandos:
-                    cursor.execute(comando)
+            with open(DB_SCHEMA, 'r', encoding='utf-8') as arquivo_comandos:
+                sql_script = arquivo_comandos.read()
+                cursor.executescript(sql_script)
         except FileNotFoundError as erro1:
             print(f'ERRO: {erro1}')
             
